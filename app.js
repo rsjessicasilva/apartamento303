@@ -1,74 +1,228 @@
-const URL_API = 
+/* ==========================================
+   CONTROLE APARTAMENTO 303
+   APP.JS - VERSÃO 2.0
+========================================== */
+
+const URL_API =
 "https://script.google.com/macros/s/AKfycbypx6CBRx1Lm2r4AvWQpbM-lh9MprFbRLcjo32PIt3pMlLTqCHcs6c3qeW6NBJpMm7H/exec";
 
+const form = document.getElementById("formDespesa");
+const btnSalvar = document.getElementById("btnSalvar");
+const mensagem = document.getElementById("mensagem");
+const loading = document.getElementById("loading");
 
+/* ============================
+      DATA DE HOJE
+============================ */
 
-const botao = document.getElementById("btnSalvar");
+window.addEventListener("load", () => {
 
+    document.getElementById("data").value =
+        new Date().toISOString().split("T")[0];
 
+});
 
-botao.addEventListener("click", async function(){
+/* ============================
+      MENSAGENS
+============================ */
 
+function mostrarMensagem(texto, tipo) {
+
+    mensagem.innerHTML = texto;
+
+    mensagem.className = "mensagem " + tipo;
+
+}
+
+/* ============================
+      LOADING
+============================ */
+
+function mostrarLoading() {
+
+    loading.classList.remove("oculto");
+
+    btnSalvar.disabled = true;
+
+}
+
+function esconderLoading() {
+
+    loading.classList.add("oculto");
+
+    btnSalvar.disabled = false;
+
+}
+
+/* ============================
+      LIMPAR FORMULÁRIO
+============================ */
+
+function limparFormulario() {
+
+    form.reset();
+
+    document.getElementById("data").value =
+        new Date().toISOString().split("T")[0];
+
+}
+
+/* ============================
+      SALVAR
+============================ */
+
+form.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    mensagem.style.display = "none";
 
     const despesa = {
-
 
         data:
         document.getElementById("data").value,
 
-
         descricao:
-        document.getElementById("descricao").value,
-
+        document.getElementById("descricao").value.trim(),
 
         categoria:
         document.getElementById("categoria").value,
 
-
         valor:
-        document.getElementById("valor").value,
-
+        Number(document.getElementById("valor").value),
 
         pagante:
         document.getElementById("pagante").value
 
     };
 
+    /* ==========================
+        VALIDAÇÃO
+    ========================== */
 
+    if(!despesa.data){
 
-    try {
+        mostrarMensagem(
+            "Informe a data.",
+            "erro"
+        );
 
+        return;
 
-const response = await fetch(URL_API, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(despesa)
-});
+    }
 
-if (!response.ok) {
-    throw new Error(`Erro HTTP ${response.status}`);
-}
+    if(!despesa.descricao){
 
-const resultado = await response.text();
-console.log(resultado);
+        mostrarMensagem(
+            "Informe a descrição.",
+            "erro"
+        );
 
+        return;
 
+    }
+
+    if(!despesa.categoria){
+
+        mostrarMensagem(
+            "Selecione a categoria.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+    if(despesa.valor <= 0){
+
+        mostrarMensagem(
+            "Informe um valor válido.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+    if(!despesa.pagante){
+
+        mostrarMensagem(
+            "Selecione quem pagou.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+    mostrarLoading();
+
+    try{
+
+        const response = await fetch(URL_API,{
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":"application/json"
+
+            },
+
+            body:JSON.stringify(despesa)
+
+        });
+
+        const resultado = await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                resultado.message ||
+                "Erro ao gravar."
+            );
+
+        }
+
+        if(resultado.status !== "ok"){
+
+            throw new Error(
+                resultado.message ||
+                "Falha ao salvar."
+            );
+
+        }
+
+        mostrarMensagem(
+
+            "✅ Despesa salva com sucesso!",
+
+            "sucesso"
+
+        );
+
+        limparFormulario();
 
     }
 
     catch(error){
 
+        console.error(error);
 
-        console.log(error);
+        mostrarMensagem(
 
+            "❌ " + error.message,
 
-        document.getElementById("mensagem").innerHTML =
-        "Erro ao salvar";
+            "erro"
 
+        );
 
     }
 
+    finally{
+
+        esconderLoading();
+
+    }
 
 });
