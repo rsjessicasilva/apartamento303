@@ -39,21 +39,20 @@ botao.addEventListener("click", async function(){
     try {
 
 
-        await fetch(URL_API, {
+const response = await fetch(URL_API, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(despesa)
+});
 
+if (!response.ok) {
+    throw new Error(`Erro HTTP ${response.status}`);
+}
 
-            method:"POST",
-
-
-            body: JSON.stringify(despesa)
-
-
-        });
-
-
-
-        document.getElementById("mensagem").innerHTML =
-        "Despesa salva com sucesso!";
+const resultado = await response.text();
+console.log(resultado);
 
 
 
