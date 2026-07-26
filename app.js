@@ -1,42 +1,84 @@
-/* ==========================================
-   CONTROLE APARTAMENTO 303
-   APP.JS - VERSÃO 2.0
-========================================== */
+/**
+ * ==========================================================
+ * Apartamento 303
+ * Controle Financeiro
+ * Versão: 3.0.0
+ * Arquivo: app.js
+ * ==========================================================
+ */
 
-const URL_API =
-"https://script.google.com/macros/s/AKfycbxqnBkapRVOJFIaY_JmWr44LFTKpzFu9rMvPKV5rh9gTlaUzKtpLfo_Vuoi2qj0F6hd/exec";
+import { APP_CONFIG } from "./js/config.js";
+
+import {
+    hojeISO,
+    limparTexto,
+    converterValor,
+    mostrarMensagem
+} from "./js/utils.js";
+
+import {
+    observarAutenticacao,
+    getUsuarioAtual
+} from "./js/auth.js";
+
+import {
+    salvarDespesa
+} from "./js/services/despesas.js";
+
+/* ==========================================================
+   ELEMENTOS DA TELA
+========================================================== */
 
 const form = document.getElementById("formDespesa");
+
 const btnSalvar = document.getElementById("btnSalvar");
+
 const mensagem = document.getElementById("mensagem");
+
 const loading = document.getElementById("loading");
 
-/* ============================
-      DATA DE HOJE
-============================ */
+/* ==========================================================
+   INICIALIZAÇÃO
+========================================================== */
 
-window.addEventListener("load", () => {
+window.addEventListener("load", iniciarAplicacao);
+
+async function iniciarAplicacao() {
+
+    document.title =
+        APP_CONFIG.APP_NAME;
 
     document.getElementById("data").value =
-        new Date().toISOString().split("T")[0];
+        hojeISO();
 
-});
+    observarAutenticacao((usuario) => {
 
-/* ============================
-      MENSAGENS
-============================ */
+        if (!usuario) {
 
-function mostrarMensagem(texto, tipo) {
+            btnSalvar.disabled = true;
 
-    mensagem.innerHTML = texto;
+            mensagem.className = "mensagem erro";
 
-    mensagem.className = "mensagem " + tipo;
+            mensagem.style.display = "block";
+
+            mensagem.innerHTML =
+                "Faça login para utilizar o sistema.";
+
+            return;
+
+        }
+
+        btnSalvar.disabled = false;
+
+        mensagem.style.display = "none";
+
+    });
 
 }
 
-/* ============================
-      LOADING
-============================ */
+/* ==========================================================
+   LOADING
+========================================================== */
 
 function mostrarLoading() {
 
@@ -54,102 +96,125 @@ function esconderLoading() {
 
 }
 
-/* ============================
-      LIMPAR FORMULÁRIO
-============================ */
+/* ==========================================================
+   LIMPAR FORMULÁRIO
+========================================================== */
 
 function limparFormulario() {
 
     form.reset();
 
     document.getElementById("data").value =
-        new Date().toISOString().split("T")[0];
+        hojeISO();
 
 }
 
-/* ============================
-      SALVAR
-============================ */
+/* ==========================================================
+   SALVAR DESPESA
+========================================================== */
 
-form.addEventListener("submit", async function(e){
+form.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
     mensagem.style.display = "none";
 
+    const usuario = getUsuarioAtual();
+
+    if (!usuario) {
+
+        mensagem.className = "mensagem erro";
+
+        mensagem.style.display = "block";
+
+        mensagem.innerHTML =
+            "Faça login para continuar.";
+
+        return;
+
+    }
+
     const despesa = {
 
         data:
-        document.getElementById("data").value,
+            document.getElementById("data").value,
 
         descricao:
-        document.getElementById("descricao").value.trim(),
+            limparTexto(
+                document.getElementById("descricao").value
+            ),
 
         categoria:
-        document.getElementById("categoria").value,
+            document.getElementById("categoria").value,
 
         valor:
-        Number(document.getElementById("valor").value),
+            converterValor(
+                document.getElementById("valor").value
+            ),
 
         pagante:
-        document.getElementById("pagante").value
+            document.getElementById("pagante").value,
+
+        usuarioId:
+            usuario.uid,
+
+        usuarioNome:
+            usuario.nome,
+
+        criadoPor:
+            usuario.email
 
     };
 
     /* ==========================
-        VALIDAÇÃO
+       VALIDAÇÕES
     ========================== */
 
-    if(!despesa.data){
+    if (!despesa.data) {
 
-        mostrarMensagem(
-            "Informe a data.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-    if(!despesa.descricao){
-
-        mostrarMensagem(
-            "Informe a descrição.",
-            "erro"
-        );
+        mensagem.className = "mensagem erro";
+        mensagem.style.display = "block";
+        mensagem.innerHTML = "Informe a data.";
 
         return;
 
     }
 
-    if(!despesa.categoria){
+    if (!despesa.descricao) {
 
-        mostrarMensagem(
-            "Selecione a categoria.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-    if(despesa.valor <= 0){
-
-        mostrarMensagem(
-            "Informe um valor válido.",
-            "erro"
-        );
+        mensagem.className = "mensagem erro";
+        mensagem.style.display = "block";
+        mensagem.innerHTML = "Informe a descrição.";
 
         return;
 
     }
 
-    if(!despesa.pagante){
+    if (!despesa.categoria) {
 
-        mostrarMensagem(
-            "Selecione quem pagou.",
-            "erro"
-        );
+        mensagem.className = "mensagem erro";
+        mensagem.style.display = "block";
+        mensagem.innerHTML = "Selecione a categoria.";
+
+        return;
+
+    }
+
+    if (despesa.valor <= 0) {
+
+        mensagem.className = "mensagem erro";
+        mensagem.style.display = "block";
+        mensagem.innerHTML = "Informe um valor válido.";
+
+        return;
+
+    }
+
+    if (!despesa.pagante) {
+
+        mensagem.className = "mensagem erro";
+        mensagem.style.display = "block";
+        mensagem.innerHTML = "Selecione quem pagou.";
 
         return;
 
@@ -157,72 +222,47 @@ form.addEventListener("submit", async function(e){
 
     mostrarLoading();
 
-    try{
+    try {
 
-const response = await fetch(URL_API, {
+        await salvarDespesa(despesa);
 
-    method: "POST",
+               mensagem.className = "mensagem sucesso";
 
-    redirect: "follow",
+        mensagem.style.display = "block";
 
-    body: JSON.stringify(despesa)
-
-});
-
-const texto = await response.text();
-
-console.log(texto);
-
-const resultado = JSON.parse(texto);
-
-        if(!response.ok){
-
-            throw new Error(
-                resultado.message ||
-                "Erro ao gravar."
-            );
-
-        }
-
-        if(resultado.status !== "ok"){
-
-            throw new Error(
-                resultado.message ||
-                "Falha ao salvar."
-            );
-
-        }
-
-        mostrarMensagem(
-
-            "✅ Despesa salva com sucesso!",
-
-            "sucesso"
-
-        );
+        mensagem.innerHTML =
+            "✅ Despesa salva com sucesso!";
 
         limparFormulario();
 
-    }
-
-    catch(error){
-
-        console.error(error);
-
         mostrarMensagem(
-
-            "❌ " + error.message,
-
-            "erro"
-
+            "Despesa salva com sucesso."
         );
 
-    }
+    } catch (erro) {
 
-    finally{
+        console.error(erro);
+
+        mensagem.className = "mensagem erro";
+
+        mensagem.style.display = "block";
+
+        mensagem.innerHTML =
+            erro.message ||
+            "Erro ao salvar a despesa.";
+
+    } finally {
 
         esconderLoading();
 
     }
 
 });
+
+/* ==========================================================
+   EXPORTAÇÃO
+========================================================== */
+
+export {
+    iniciarAplicacao
+};
