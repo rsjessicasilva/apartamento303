@@ -1,118 +1,314 @@
-body {
+/* ===========================
+   CONTROLE APARTAMENTO 303
+   Versão 2.0
+=========================== */
 
-    font-family: Arial, sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    background: #f3f3f3;
+body{
 
-    padding:20px;
+    font-family:Arial, Helvetica, sans-serif;
+
+    background:#ede7f6;
+
+    color:#333;
+
+    min-height:100vh;
 
 }
 
+.container{
 
-.container {
-
-    max-width:400px;
+    max-width:430px;
 
     margin:auto;
 
-}
-
-
-.card {
-
-    background:white;
-
     padding:20px;
 
-    border-radius:15px;
+}
 
-    box-shadow:0 3px 10px #ccc;
+/* ===========================
+            HEADER
+=========================== */
+
+header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-bottom:25px;
 
 }
 
-.logo {
+.logo{
 
-    width:40px;
+    width:70px;
 
-    height:40px;
+    height:70px;
 
-    vertical-align:middle;
-
-}
-h1 {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    justify-content: center;
+    object-fit:contain;
 
 }
 
+header h1{
 
-label {
+    font-size:28px;
+
+    color:#6A1B9A;
+
+}
+
+.subtitulo{
 
     display:block;
 
-    margin-top:15px;
+    margin-top:4px;
+
+    color:#777;
+
+    font-size:14px;
 
 }
 
+/* ===========================
+            CARD
+=========================== */
 
-input, select {
+.card{
 
-    width:100%;
+    background:#FFF;
 
-    padding:10px;
+    border-radius:20px;
 
-    margin-top:5px;
+    padding:25px;
 
-    box-sizing:border-box;
+    box-shadow:
 
-}
-
-
-button {
-
-    width:100%;
-
-    margin-top:20px;
-
-    padding:15px;
-
-    background:#2E7D32;
-
-    color:white;
-
-    border:none;
-
-    border-radius:10px;
-
-    font-size:16px;
+        0 10px 25px rgba(0,0,0,.12);
 
 }
 
-
-#mensagem {
+.card h2{
 
     text-align:center;
 
-    color:green;
+    margin-bottom:25px;
+
+    color:#6A1B9A;
 
 }
 
-.logo {
+/* ===========================
+            CAMPOS
+=========================== */
 
-    width: 50px;
+.campo{
 
-    height: 50px;
+    margin-bottom:18px;
 
-    object-fit: contain;
+}
 
-    vertical-align: middle;
+label{
 
-    margin-right: 10px;
+    display:block;
+
+    margin-bottom:6px;
+
+    font-weight:bold;
+
+    color:#444;
+
+}
+
+input,
+select{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:2px solid #DDD;
+
+    font-size:16px;
+
+    transition:.25s;
+
+    background:white;
+
+}
+
+input:focus,
+select:focus{
+
+    outline:none;
+
+    border-color:#8E24AA;
+
+    box-shadow:0 0 8px rgba(142,36,170,.30);
+
+}
+
+/* ===========================
+            BOTÃO
+=========================== */
+
+button{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    background:#6A1B9A;
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    transition:.25s;
+
+}
+
+button:hover{
+
+    background:#7B1FA2;
+
+}
+
+button:active{
+
+    transform:scale(.98);
+
+}
+
+button:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+}
+
+/* ===========================
+          LOADING
+=========================== */
+
+.loading{
+
+    margin-top:18px;
+
+    text-align:center;
+
+    color:#6A1B9A;
+
+    font-weight:bold;
+
+}
+
+.oculto{
+
+    display:none;
+
+}
+
+/* ===========================
+         MENSAGENS
+=========================== */
+
+.mensagem{
+
+    margin-top:18px;
+
+    text-align:center;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    display:none;
+
+}
+
+.mensagem.sucesso{
+
+    display:block;
+
+    background:#E8F5E9;
+
+    color:#2E7D32;
+
+    border:1px solid #81C784;
+
+}
+
+.mensagem.erro{
+
+    display:block;
+
+    background:#FFEBEE;
+
+    color:#C62828;
+
+    border:1px solid #EF9A9A;
+
+}
+
+/* ===========================
+            FOOTER
+=========================== */
+
+footer{
+
+    text-align:center;
+
+    margin-top:30px;
+
+    color:#777;
+
+    font-size:13px;
+
+}
+
+/* ===========================
+        RESPONSIVO
+=========================== */
+
+@media(max-width:480px){
+
+    .container{
+
+        padding:15px;
+
+    }
+
+    .card{
+
+        padding:20px;
+
+    }
+
+    header h1{
+
+        font-size:24px;
+
+    }
 
 }
