@@ -159,21 +159,21 @@ form.addEventListener("submit", async function(e){
 
     try{
 
-        const response = await fetch(URL_API,{
+const response = await fetch(URL_API, {
 
-            method:"POST",
+    method: "POST",
 
-            headers:{
+    redirect: "follow",
 
-                "Content-Type":"application/json"
+    body: JSON.stringify(despesa)
 
-            },
+});
 
-            body:JSON.stringify(despesa)
+const texto = await response.text();
 
-        });
+console.log(texto);
 
-        const resultado = await response.json();
+const resultado = JSON.parse(texto);
 
         if(!response.ok){
 
