@@ -8,16 +8,22 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Controle Financeiro • Apartamento 303</title>
+    <title>Apartamento 303</title>
 
     <meta name="theme-color"
           content="#6A1B9A">
 
     <meta name="description"
-          content="Controle financeiro compartilhado do Apartamento 303">
+          content="Controle Financeiro do Apartamento 303">
 
     <link rel="manifest"
           href="manifest.json">
+
+    <link rel="icon"
+          href="icons/icon-192.png">
+
+    <link rel="apple-touch-icon"
+          href="icons/icon-192.png">
 
     <link rel="stylesheet"
           href="style.css">
@@ -26,27 +32,39 @@
 
 <body>
 
-<div class="container">
+    <!-- Splash -->
 
-    <!-- LOGIN -->
+    <div id="splashScreen">
 
-    <section id="loginTela">
+        <img src="icons/icon-192.png"
+             alt="Apartamento 303">
 
-        <div class="login-card">
+        <h1>Apartamento 303</h1>
 
-            <img
-                src="icons/icon-512.png"
-                class="logo">
+        <p>Controle Financeiro</p>
 
-            <h1>Apartamento 303</h1>
+    </div>
+
+    <!-- Login -->
+
+    <section id="loginScreen"
+             class="screen hidden">
+
+        <div class="card">
+
+            <img src="icons/icon-192.png"
+                 class="logo">
+
+            <h2>Bem-vinda</h2>
 
             <p>
 
-                Controle Financeiro Compartilhado
+                Faça login utilizando sua conta Google.
 
             </p>
 
-            <button id="btnLogin">
+            <button id="btnLogin"
+                    class="primaryButton">
 
                 Entrar com Google
 
@@ -56,17 +74,19 @@
 
     </section>
 
-    <!-- APP -->
+    <!-- Aplicação -->
 
-    <section id="appTela" style="display:none;">
+    <section id="appScreen"
+             class="hidden">
+
+        <!-- Cabeçalho -->
 
         <header>
 
-            <div class="usuario">
+            <div class="headerLeft">
 
-                <img
-                    id="fotoUsuario"
-                    class="foto">
+                <img id="fotoUsuario"
+                     class="avatar">
 
                 <div>
 
@@ -78,376 +98,130 @@
 
             </div>
 
-            <button
-                id="btnLogout"
-                class="btn-secundario">
+            <button id="btnDashboard">
 
-                Sair
+                Dashboard
 
             </button>
 
         </header>
 
-        <!-- DASHBOARD -->
+        <!-- Cadastro -->
 
-        <section class="card">
+        <main>
 
-            <h2>
-
-                Resumo do mês
-
-            </h2>
-
-            <div class="dashboard">
-
-                <div class="info">
-
-                    <span>Jessica</span>
-
-                    <strong id="totalJessica">
-
-                        R$ 0,00
-
-                    </strong>
-
-                </div>
-
-                <div class="info">
-
-                    <span>Juliana</span>
-
-                    <strong id="totalJuliana">
-
-                        R$ 0,00
-
-                    </strong>
-
-                </div>
-
-                <div class="info destaque">
-
-                    <span>
-
-                        Resultado
-
-                    </span>
-
-                    <strong id="resultado">
-
-                        -
-
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- NOVA DESPESA -->
-
-        <section class="card">
-
-            <h2>
-
-                Nova Despesa
-
-            </h2>
-
-            <form id="formDespesa">
-
-                <div class="campo">
-
-                    <label>
-
-                        Data *
-
-                    </label>
-
-                    <input
-                        type="date"
-                        id="data"
-                        required>
-
-                </div>
-
-                <div class="campo">
-
-                    <label>
-
-                        Categoria *
-
-                    </label>
-
-                    <select
-                        id="categoria"
-                        required>
-
-                        <option value="">
-
-                            Selecione...
-
-                        </option>
-
-                        <option>Condomínio</option>
-
-                        <option>Apartamento</option>
-
-                        <option>Mercado</option>
-
-                        <option>Energia</option>
-
-                        <option>Internet</option>
-
-                        <option>Água</option>
-
-                        <option>Limpeza</option>
-
-                        <option>Manutenção</option>
-
-                        <option>Outros</option>
-
-                    </select>
-
-                </div>
-
-                <div class="campo">
-
-                    <label>
-
-                        Valor *
-
-                    </label>
-
-                    <input
-                        id="valor"
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="140,00"
-                        required>
-
-                </div>
-
-                <div class="campo">
-
-                    <label>
-
-                        Quem pagou? *
-
-                    </label>
-
-               <div class="campo">
-
-<label>
-
-Quem pagou? *
-
-</label>
-
-<div
-id="paganteSegmentado"
-class="segmentado">
-
-</div>
-
-</div>
-
-                </div>
-
-                <div class="campo">
-
-                    <label>
-
-                        Tipo da despesa *
-
-                    </label>
-
-                    <div class="radio-group">
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="tipo"
-                                value="DIVIDIDA"
-                                checked>
-
-                            Dividida entre as duas
-
-                        </label>
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="tipo"
-                                value="OUTRA_PAGA">
-
-                            Somente a outra irmã paga
-
-                        </label>
-
-                    </div>
-
-                </div>
-
-                <div class="campo">
-
-                    <label>
-
-                        Observação
-
-                    </label>
-
-                    <textarea
-                        id="observacao"
-                        rows="4"
-                        maxlength="500"
-                        placeholder="Informações adicionais (opcional)"></textarea>
-
-                </div>
-
-                <button
-                    id="btnSalvar"
-                    type="submit">
-
-                    Salvar Despesa
-
-                </button>
-
-            </form>
-
-        </section>
-
-        <!-- HISTÓRICO -->
-
-        <section class="card">
-
-            <div class="titulo-card">
+            <div class="card">
 
                 <h2>
 
-                    Histórico
+                    Nova Despesa
 
                 </h2>
 
-                <button
-                    id="btnAtualizarHistorico"
-                    class="btn-secundario">
+                <form id="formDespesa">
 
-                    Atualizar
+                    <!-- Data -->
 
-                </button>
+                    <div class="campo">
 
-            </div>
+                        <label>
 
-            <div id="listaHistorico">
+                            Data *
 
-                Nenhuma despesa cadastrada.
+                        </label>
 
-            </div>
+                        <input
 
-        </section>
+                            type="date"
 
-        <!-- FECHAMENTO -->
+                            id="data"
 
-        <section class="card">
+                            required>
 
-            <h2>
+                    </div>
 
-                Fechamento do mês
+                    <!-- Categoria -->
 
-            </h2>
+                    <div class="campo">
 
-            <button
-                id="btnFecharMes"
-                class="btn-perigo">
+                        <label>
 
-                Fechar Mês
+                            Categoria *
 
-            </button>
+                        </label>
 
-        </section>
+                        <select
 
-    </section>
+                            id="categoria"
 
-</div>
+                            required>
 
-<!-- MODAL SENHA -->
+                            <option value="">
 
-<div
-    id="modalSenha"
-    class="modal">
+                                Selecione
 
-    <div class="modal-conteudo">
+                            </option>
 
-        <h3>
+                        </select>
 
-            Fechar mês
+                    </div>
 
-        </h3>
+                    <!-- Valor -->
 
-        <p>
+                    <div class="campo">
 
-            Digite a senha para continuar.
+                        <label>
 
-        </p>
+                            Valor *
 
-        <input
-            type="password"
-            id="senhaFechamento"
-            maxlength="4"
-            placeholder="Senha">
+                        </label>
 
-        <div class="acoes">
+                        <input
 
-            <button id="cancelarModal">
+                            type="text"
 
-                Cancelar
+                            id="valor"
 
-            </button>
+                            placeholder="0,00"
 
-            <button id="confirmarFechamento">
+                            autocomplete="off"
 
-                Confirmar
+                            required>
 
-            </button>
+                    </div>
 
-        </div>
+                    <!-- Quem pagou -->
 
-    </div>
+                    <div class="campo">
 
-</div>
+                        <label>
 
-<!-- LOADING -->
+                            Quem pagou? *
 
-<div
-    id="loading"
-    class="loading">
+                        </label>
 
-    Carregando...
+                        <select
 
-</div>
+                            id="pagante"
 
-<!-- TOAST -->
+                            required>
 
-<div
-    id="toast">
+                            <option>
 
-</div>
+                                Jessica
 
-<script type="module" src="firebase.js"></script>
+                            </option>
 
-<script type="module" src="app.js"></script>
+                            <option>
 
-<script type="module" src="dashboard.js"></script>
+                                Juliana
 
-<script type="module" src="historico.js"></script>
+                            </option>
 
-<script type="module" src="fechamento.js"></script>
+                        </select>
 
-<script type="module" src="exportar.js"></script>
+                    </div>
 
-</body>
+                    <!-- Tipo -->
 
-</html>
+                    
