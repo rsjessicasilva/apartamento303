@@ -30,7 +30,15 @@ body {
 
 }
 
+.logo {
 
+    width:40px;
+
+    height:40px;
+
+    vertical-align:middle;
+
+}
 h1 {
 
     text-align:center;
