@@ -75,9 +75,9 @@
         </label>
 
         <input 
-            type="number"
-            id="valor"
-            placeholder="0,00">
+valor: parseFloat(
+    document.getElementById("valor").value.replace(",", ".")
+)
 
 
         <label>
