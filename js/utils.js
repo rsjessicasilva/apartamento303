@@ -74,8 +74,15 @@ export function formatarData(dataISO) {
 
     if (!dataISO) return "";
 
-    return new Date(dataISO)
-        .toLocaleDateString("pt-BR");
+    const data = new Date(dataISO);
+
+    if (isNaN(data.getTime())) {
+
+        return "";
+
+    }
+
+    return data.toLocaleDateString("pt-BR");
 
 }
 
@@ -153,9 +160,29 @@ export function aguardar(ms) {
 /**
  * Toast simples
  */
-export function mostrarMensagem(texto) {
+export function mostrarMensagem(texto, tempo = 3000) {
 
-    alert(texto);
+    const toast = document.getElementById("toast");
+
+    if (!toast) {
+
+        alert(texto);
+        return;
+
+    }
+
+    toast.textContent = texto;
+
+    toast.classList.remove("hidden");
+    toast.classList.remove("oculto");
+
+    clearTimeout(toast._timer);
+
+    toast._timer = setTimeout(() => {
+
+        toast.classList.add("hidden");
+
+    }, tempo);
 
 }
 
@@ -165,5 +192,86 @@ export function mostrarMensagem(texto) {
 export function confirmar(texto) {
 
     return confirm(texto);
+
+}
+/**
+ * Verifica se um objeto é vazio.
+ */
+export function objetoVazio(obj) {
+
+    return !obj ||
+
+           Object.keys(obj).length === 0;
+
+}
+/**
+ * Retorna verdadeiro quando o valor é numérico.
+ */
+export function ehNumero(valor) {
+
+    return !isNaN(Number(valor));
+
+}
+/**
+ * Soma o valor de uma lista de objetos.
+ */
+export function somarValores(lista, campo = "valor") {
+
+    return lista.reduce(
+
+        (total, item) =>
+
+            total + Number(item[campo] || 0),
+
+        0
+
+    );
+
+}
+
+/**
+ * Conta itens de uma lista.
+ */
+export function contarItens(lista) {
+
+    return Array.isArray(lista)
+        ? lista.length
+        : 0;
+
+}
+
+/**
+ * Filtra itens por campo.
+ */
+export function filtrarPorCampo(lista, campo, valor) {
+
+    return lista.filter(
+
+        item => item[campo] === valor
+
+    );
+
+}
+
+/**
+ * Agrupa itens por campo.
+ */
+export function agruparPorCampo(lista, campo) {
+
+    return lista.reduce((resultado, item) => {
+
+        const chave = item[campo];
+
+        if (!resultado[chave]) {
+
+            resultado[chave] = [];
+
+        }
+
+        resultado[chave].push(item);
+
+        return resultado;
+
+    }, {});
 
 }

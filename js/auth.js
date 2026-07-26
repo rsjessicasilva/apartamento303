@@ -26,7 +26,7 @@ import {
 import { COLLECTIONS } from "./config.js";
 
 let usuarioAtual = null;
-
+let authInicializada = false;
 /**
  * Login Google
  */
@@ -43,7 +43,10 @@ export async function fazerLogin() {
         const resultado = await signInWithPopup(auth, provider);
 
         await salvarUsuario(resultado.user);
-
+        usuarioAtual =
+        await carregarUsuario(
+        resultado.user.uid
+    );
         return resultado.user;
 
     } catch (erro) {
@@ -61,11 +64,13 @@ export async function fazerLogin() {
  */
 export async function fazerLogout() {
 
+  usuarioAtual = null;
+
     await signOut(auth);
 
 }
 
-/**
+//**
  * Observa autenticação
  */
 export function observarAutenticacao(callback) {
@@ -76,6 +81,8 @@ export function observarAutenticacao(callback) {
 
             usuarioAtual = null;
 
+            authInicializada = true;
+
             callback(null);
 
             return;
@@ -85,6 +92,8 @@ export function observarAutenticacao(callback) {
         await salvarUsuario(user);
 
         usuarioAtual = await carregarUsuario(user.uid);
+
+        authInicializada = true;
 
         callback(usuarioAtual);
 
@@ -100,7 +109,15 @@ export function getUsuarioAtual() {
     return usuarioAtual;
 
 }
+/**
+ * Indica se o Firebase já respondeu
+ * ao primeiro estado de autenticação.
+ */
+export function authPronta() {
 
+    return authInicializada;
+
+}
 /**
  * Jessica ou Juliana
  */
@@ -187,6 +204,12 @@ async function carregarUsuario(uid) {
 
     }
 
-    return snap.data();
+return {
+
+    uid,
+
+    ...snap.data()
+
+};
 
 }

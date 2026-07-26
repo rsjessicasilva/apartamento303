@@ -31,193 +31,461 @@ import {
     Timestamp
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-/**
- * Retorna referência da coleção
- */
+/* ==========================================================
+   HELPERS
+========================================================== */
+
 const despesasRef = collection(
     db,
     COLLECTIONS.EXPENSES
 );
 
-/**
- * Salvar despesa
- */
-export async function salvarDespesa(despesa) {
+function getDespesaRef(id = null) {
 
-    const documento = {
+    if (id) {
 
-        numero: gerarNumeroDespesa(),
-
-        data: Timestamp.fromDate(
-            new Date(despesa.data)
-        ),
-
-        descricao: despesa.descricao,
-
-        categoria: despesa.categoria,
-
-        valor: Number(despesa.valor),
-
-        pagante: despesa.pagante,
-
-        criadoEm: Timestamp.now(),
-
-        atualizadoEm: Timestamp.now()
-
-    };
-
-    const ref = await addDoc(
-        despesasRef,
-        documento
-    );
-
-    return ref.id;
-
-}
-
-/**
- * Atualizar despesa
- */
-export async function atualizarDespesa(id, dados) {
-
-    const ref = doc(
-        db,
-        COLLECTIONS.EXPENSES,
-        id
-    );
-
-    dados.atualizadoEm = Timestamp.now();
-
-    if (dados.data) {
-
-        dados.data = Timestamp.fromDate(
-            new Date(dados.data)
+        return doc(
+            db,
+            COLLECTIONS.EXPENSES,
+            id
         );
 
     }
 
-    await updateDoc(ref, dados);
+    return despesasRef;
 
 }
 
-/**
- * Excluir despesa
- */
-export async function excluirDespesa(id) {
+function converterResultado(snapshot) {
 
-    await deleteDoc(
-        doc(
-            db,
-            COLLECTIONS.EXPENSES,
-            id
-        )
-    );
+    return snapshot.docs.map(item => {
+
+        const dados = item.data();
+
+        return {
+
+            id: item.id,
+
+            ...dados,
+
+            data: dados.data?.toDate
+                ? dados.data.toDate()
+                : dados.data
+
+        };
+
+    });
 
 }
 
-/**
- * Buscar uma despesa
- */
-export async function obterDespesa(id) {
+/* ==========================================================
+   SALVAR
+========================================================== */
 
-    const ref = doc(
-        db,
-        COLLECTIONS.EXPENSES,
-        id
-    );
+export async function salvarDespesa(despesa) {
 
-    const snap = await getDoc(ref);
+    try {
 
-    if (!snap.exists()) {
+        const documento = {
 
-        return null;
+            numero: gerarNumeroDespesa(),
+
+            data: Timestamp.fromDate(
+                new Date(despesa.data)
+            ),
+
+            descricao: despesa.descricao,
+
+            categoria: despesa.categoria,
+
+            valor: Number(despesa.valor),
+
+            pagante: despesa.pagante,
+
+            usuarioId: despesa.usuarioId,
+
+            usuarioNome: despesa.usuarioNome,
+
+            criadoPor: despesa.criadoPor,
+
+            criadoEm: Timestamp.now(),
+
+            atualizadoEm: Timestamp.now()
+
+        };
+
+        const ref = await addDoc(
+            despesasRef,
+            documento
+        );
+
+        return {
+
+            sucesso: true,
+
+            id: ref.id
+
+        };
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar despesa:",
+            erro
+        );
+
+        throw erro;
 
     }
 
-    return {
+}
 
-        id: snap.id,
+/* ==========================================================
+   ATUALIZAR
+========================================================== */
 
-        ...snap.data()
+export async function atualizarDespesa(
+    id,
+    dados
+) {
 
-    };
+    try {
+
+        if (dados.data) {
+
+            dados.data = Timestamp.fromDate(
+                new Date(dados.data)
+            );
+
+        }
+
+        dados.atualizadoEm =
+            Timestamp.now();
+
+        await updateDoc(
+            getDespesaRef(id),
+            dados
+        );
+
+        return {
+
+            sucesso: true
+
+        };
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao atualizar despesa:",
+            erro
+        );
+
+        throw erro;
+
+    }
 
 }
 
-/**
- * Listar todas
- */
+/* ==========================================================
+   EXCLUIR
+========================================================== */
+
+export async function excluirDespesa(id) {
+
+    try {
+
+        await deleteDoc(
+            getDespesaRef(id)
+        );
+
+        return {
+
+            sucesso: true
+
+        };
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir despesa:",
+            erro
+        );
+
+        throw erro;
+
+    }
+
+}
+
+/* ==========================================================
+   OBTER
+========================================================== */
+
+export async function obterDespesa(id) {
+
+    try {
+
+        const snap = await getDoc(
+            getDespesaRef(id)
+        );
+
+        if (!snap.exists()) {
+
+            return null;
+
+        }
+
+        const dados = snap.data();
+
+        return {
+
+            id: snap.id,
+
+            ...dados,
+
+            data: dados.data?.toDate
+                ? dados.data.toDate()
+                : dados.data
+
+};
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao obter despesa:",
+            erro
+        );
+
+        throw erro;
+
+    }
+
+}
+
+/* ==========================================================
+   LISTAR TODAS
+========================================================== */
+
 export async function listarDespesas() {
 
-    const consulta = query(
-        despesasRef,
-        orderBy("data", "desc")
-    );
+    try {
 
-    const resultado = await getDocs(
-        consulta
-    );
+        const consulta = query(
+            despesasRef,
+            orderBy("data", "desc")
+        );
 
-    return resultado.docs.map(doc => ({
+        const resultado =
+            await getDocs(consulta);
 
-        id: doc.id,
+        return converterResultado(
+            resultado
+        );
 
-        ...doc.data()
+    } catch (erro) {
 
-    }));
+        console.error(
+            "Erro ao listar despesas:",
+            erro
+        );
+
+        throw erro;
+
+    }
 
 }
 
-/**
- * Listar por mês/ano
- */
+/* ==========================================================
+   LISTAR POR MÊS
+========================================================== */
+
 export async function listarDespesasMes(
     mes,
     ano
 ) {
 
-    const inicio = new Date(
-        ano,
-        mes - 1,
-        1
+    try {
+
+        const inicio = new Date(
+            ano,
+            mes - 1,
+            1
+        );
+
+        const fim = new Date(
+            ano,
+            mes,
+            1
+        );
+
+        const consulta = query(
+
+            despesasRef,
+
+            where(
+                "data",
+                ">=",
+                Timestamp.fromDate(inicio)
+            ),
+
+            where(
+                "data",
+                "<",
+                Timestamp.fromDate(fim)
+            ),
+
+            orderBy(
+                "data",
+                "desc"
+            )
+
+        );
+
+        const resultado =
+            await getDocs(
+                consulta
+            );
+
+        return converterResultado(
+            resultado
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao listar despesas do mês:",
+            erro
+        );
+
+        throw erro;
+
+    }
+
+}
+/* ==========================================================
+   CONSULTAS
+========================================================== */
+
+/**
+ * Lista despesas de um pagante.
+ */
+export async function listarDespesasPorPagante(
+    pagante
+) {
+
+    try {
+
+        const consulta = query(
+
+            despesasRef,
+
+            where(
+                "pagante",
+                "==",
+                pagante
+            ),
+
+            orderBy(
+                "data",
+                "desc"
+            )
+
+        );
+
+        const resultado =
+            await getDocs(
+                consulta
+            );
+
+        return converterResultado(
+            resultado
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao listar despesas por pagante:",
+            erro
+        );
+
+        throw erro;
+
+    }
+
+}
+/**
+ * Lista despesas por categoria.
+ */
+export async function listarDespesasPorCategoria(
+    categoria
+) {
+
+    try {
+
+        const consulta = query(
+
+            despesasRef,
+
+            where(
+                "categoria",
+                "==",
+                categoria
+            ),
+
+            orderBy(
+                "data",
+                "desc"
+            )
+
+        );
+
+        const resultado =
+            await getDocs(
+                consulta
+            );
+
+        return converterResultado(
+            resultado
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao listar despesas por categoria:",
+            erro
+        );
+
+        throw erro;
+
+    }
+
+}
+/**
+ * Calcula o total de uma lista.
+ */
+export function calcularTotalDespesas(
+    despesas
+) {
+
+    return despesas.reduce(
+
+        (total, despesa) =>
+
+            total +
+            Number(
+                despesa.valor || 0
+            ),
+
+        0
+
     );
 
-    const fim = new Date(
-        ano,
-        mes,
-        1
-    );
+}
+/**
+ * Quantidade de despesas.
+ */
+export function contarDespesas(despesas = []) {
 
-    const consulta = query(
-
-        despesasRef,
-
-        where(
-            "data",
-            ">=",
-            Timestamp.fromDate(inicio)
-        ),
-
-        where(
-            "data",
-            "<",
-            Timestamp.fromDate(fim)
-        ),
-
-        orderBy("data", "desc")
-
-    );
-
-    const resultado = await getDocs(
-        consulta
-    );
-
-    return resultado.docs.map(doc => ({
-
-        id: doc.id,
-
-        ...doc.data()
-
-    }));
+    return despesas.length;
 
 }

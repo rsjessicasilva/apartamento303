@@ -59,17 +59,12 @@ export const EXPENSE_TYPE = {
 };
 
 export const COLLECTIONS = {
-
     USERS: "usuarios",
-
     CATEGORIES: "categorias",
-
     EXPENSES: "despesas",
-
     SETTINGS: "configuracoes",
-
     CLOSINGS: "fechamentos"
-
 };
+
 
 export const SETTINGS_DOCUMENT = "geral";
