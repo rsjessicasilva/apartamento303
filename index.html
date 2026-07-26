@@ -223,5 +223,256 @@
                     </div>
 
                     <!-- Tipo -->
+                    <!-- Tipo da despesa -->
 
+                    <div class="campo">
+
+                        <label>
+
+                            Tipo da despesa *
+
+                        </label>
+
+                        <div class="segmentado">
+
+                            <label class="segmento">
+
+                                <input
+                                    type="radio"
+                                    name="tipoDespesa"
+                                    value="DIVIDIDA"
+                                    checked>
+
+                                <span>
+
+                                    Dividida entre as duas
+
+                                </span>
+
+                            </label>
+
+                            <label class="segmento">
+
+                                <input
+                                    type="radio"
+                                    name="tipoDespesa"
+                                    value="OUTRA_PAGA">
+
+                                <span>
+
+                                    Apenas a outra paga
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Observação -->
+
+                    <div class="campo">
+
+                        <label>
+
+                            Observação
+
+                        </label>
+
+                        <textarea
+
+                            id="observacao"
+
+                            rows="4"
+
+                            maxlength="300"
+
+                            placeholder="Informações adicionais (opcional)">
+
+                        </textarea>
+
+                    </div>
+
+                    <!-- Comprovante -->
+
+                    <div class="campo">
+
+                        <label>
+
+                            Comprovante (Opcional)
+
+                        </label>
+
+                        <input
+
+                            type="file"
+
+                            id="comprovante"
+
+                            accept=".jpg,.jpeg,.png,.pdf">
+
+                    </div>
+
+                    <!-- Botão -->
+
+                    <button
+
+                        id="btnSalvar"
+
+                        type="submit"
+
+                        class="primaryButton">
+
+                        Salvar Despesa
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </section>
+
+    <!-- DASHBOARD -->
+
+    <section
+
+        id="dashboardScreen"
+
+        class="screen hidden">
+
+        <header>
+
+            <button
+
+                id="btnVoltarCadastro">
+
+                ← Cadastro
+
+            </button>
+
+            <h2>
+
+                Dashboard
+
+            </h2>
+
+        </header>
+
+        <div class="cardsDashboard">
+
+            <div class="dashboardCard">
+
+                <span>
+
+                    Total do mês
+
+                </span>
+
+                <h2 id="totalMes">
+
+                    R$ 0,00
+
+                </h2>
+
+            </div>
+
+            <div class="dashboardCard">
+
+                <span>
+
+                    Jessica pagou
+
+                </span>
+
+                <h2 id="totalJessica">
+
+                    R$ 0,00
+
+                </h2>
+
+            </div>
+
+            <div class="dashboardCard">
+
+                <span>
+
+                    Juliana pagou
+
+                </span>
+
+                <h2 id="totalJuliana">
+
+                    R$ 0,00
+
+                </h2>
+
+            </div>
+
+        </div>
+
+        <!-- Histórico -->
+
+        <section class="card">
+
+            <div class="tituloHistorico">
+
+                <h3>
+
+                    Últimas despesas
+
+                </h3>
+
+            </div>
+
+            <div
+
+                id="listaDespesas"
+
+                class="listaDespesas">
+
+            </div>
+
+        </section>
+
+        <!-- Ações -->
+
+        <section class="card">
+
+            <button
+
+                id="btnExportarPdf"
+
+                class="secondaryButton">
+
+                Exportar PDF
+
+            </button>
+
+            <button
+
+                id="btnExportarExcel"
+
+                class="secondaryButton">
+
+                Exportar Excel
+
+            </button>
+
+            <button
+
+                id="btnExportarCsv"
+
+                class="secondaryButton">
+
+                Exportar CSV
+
+            </button>
+
+        </section>
+
+        
                     
