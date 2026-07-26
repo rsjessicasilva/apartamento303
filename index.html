@@ -8,16 +8,19 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Controle Apartamento 303</title>
+    <title>Controle Financeiro • Apartamento 303</title>
 
-    <meta name="theme-color" content="#6A1B9A">
+    <meta name="theme-color"
+          content="#6A1B9A">
 
     <meta name="description"
-          content="Controle financeiro do Apartamento 303">
+          content="Controle financeiro compartilhado do Apartamento 303">
 
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest"
+          href="manifest.json">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="style.css">
 
 </head>
 
@@ -25,176 +28,434 @@
 
 <div class="container">
 
-    <header>
+    <!-- LOGIN -->
 
-        <img
-            src="icons/icon-512.png"
-            class="logo"
-            alt="Apartamento 303">
+    <section id="loginTela">
 
-        <div>
+        <div class="login-card">
+
+            <img
+                src="icons/icon-512.png"
+                class="logo">
 
             <h1>Apartamento 303</h1>
 
-            <span class="subtitulo">
-                Controle Financeiro
-            </span>
+            <p>
 
-        </div>
+                Controle Financeiro Compartilhado
 
-    </header>
+            </p>
 
-    <section class="card">
+            <button id="btnLogin">
 
-        <h2>Nova Despesa</h2>
-
-        <form id="formDespesa">
-
-            <div class="campo">
-
-                <label for="data">
-
-                    Data
-
-                </label>
-
-                <input
-                    type="date"
-                    id="data"
-                    required>
-
-            </div>
-
-            <div class="campo">
-
-                <label for="descricao">
-
-                    Descrição
-
-                </label>
-
-                <input
-                    type="text"
-                    id="descricao"
-                    maxlength="80"
-                    placeholder="Ex.: Mercado"
-                    required>
-
-            </div>
-
-            <div class="campo">
-
-                <label for="categoria">
-
-                    Categoria
-
-                </label>
-
-                <select
-                    id="categoria"
-                    required>
-
-                    <option value="">Selecione...</option>
-
-                    <option>Mercado</option>
-                    <option>Energia Casa</option>
-                    <option>Internet Casa</option>
-                    <option>Energia Apto</option>
-                    <option>Internet Apto</option>
-                    <option>Condomínio</option>
-                    <option>Apartamento</option>
-                    <option>Outros</option>
-
-                </select>
-
-            </div>
-
-            <div class="campo">
-
-                <label for="valor">
-
-                    Valor (R$)
-
-                </label>
-
-                <input
-                    type="number"
-                    id="valor"
-                    step="0.01"
-                    min="0.01"
-                    placeholder="0,00"
-                    required>
-
-            </div>
-
-            <div class="campo">
-
-                <label for="pagante">
-
-                    Quem pagou?
-
-                </label>
-
-                <select
-                    id="pagante"
-                    required>
-
-                    <option value="">Selecione...</option>
-
-                    <option>Jessica</option>
-
-                    <option>Juliana</option>
-
-                </select>
-
-            </div>
-
-            <button
-                id="btnSalvar"
-                type="submit">
-
-                💾 Salvar Despesa
+                Entrar com Google
 
             </button>
-
-        </form>
-
-        <div
-            id="loading"
-            class="loading oculto">
-
-            Salvando despesa...
-
-        </div>
-
-        <div
-            id="mensagem"
-            class="mensagem">
 
         </div>
 
     </section>
 
-    <footer>
+    <!-- APP -->
 
-        Apartamento 303 © 2026
+    <section id="appTela" style="display:none;">
 
-    </footer>
+        <header>
+
+            <div class="usuario">
+
+                <img
+                    id="fotoUsuario"
+                    class="foto">
+
+                <div>
+
+                    <span id="nomeUsuario"></span>
+
+                    <small id="emailUsuario"></small>
+
+                </div>
+
+            </div>
+
+            <button
+                id="btnLogout"
+                class="btn-secundario">
+
+                Sair
+
+            </button>
+
+        </header>
+
+        <!-- DASHBOARD -->
+
+        <section class="card">
+
+            <h2>
+
+                Resumo do mês
+
+            </h2>
+
+            <div class="dashboard">
+
+                <div class="info">
+
+                    <span>Jessica</span>
+
+                    <strong id="totalJessica">
+
+                        R$ 0,00
+
+                    </strong>
+
+                </div>
+
+                <div class="info">
+
+                    <span>Juliana</span>
+
+                    <strong id="totalJuliana">
+
+                        R$ 0,00
+
+                    </strong>
+
+                </div>
+
+                <div class="info destaque">
+
+                    <span>
+
+                        Resultado
+
+                    </span>
+
+                    <strong id="resultado">
+
+                        -
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- NOVA DESPESA -->
+
+        <section class="card">
+
+            <h2>
+
+                Nova Despesa
+
+            </h2>
+
+            <form id="formDespesa">
+
+                <div class="campo">
+
+                    <label>
+
+                        Data *
+
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data"
+                        required>
+
+                </div>
+
+                <div class="campo">
+
+                    <label>
+
+                        Categoria *
+
+                    </label>
+
+                    <select
+                        id="categoria"
+                        required>
+
+                        <option value="">
+
+                            Selecione...
+
+                        </option>
+
+                        <option>Condomínio</option>
+
+                        <option>Apartamento</option>
+
+                        <option>Mercado</option>
+
+                        <option>Energia</option>
+
+                        <option>Internet</option>
+
+                        <option>Água</option>
+
+                        <option>Limpeza</option>
+
+                        <option>Manutenção</option>
+
+                        <option>Outros</option>
+
+                    </select>
+
+                </div>
+
+                <div class="campo">
+
+                    <label>
+
+                        Valor *
+
+                    </label>
+
+                    <input
+                        id="valor"
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="140,00"
+                        required>
+
+                </div>
+
+                <div class="campo">
+
+                    <label>
+
+                        Quem pagou? *
+
+                    </label>
+
+                    <select
+                        id="pagante"
+                        required>
+
+                        <option value="">
+
+                            Selecione...
+
+                        </option>
+
+                        <option>
+
+                            Jessica
+
+                        </option>
+
+                        <option>
+
+                            Juliana
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="campo">
+
+                    <label>
+
+                        Tipo da despesa *
+
+                    </label>
+
+                    <div class="radio-group">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="tipo"
+                                value="DIVIDIDA"
+                                checked>
+
+                            Dividida entre as duas
+
+                        </label>
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="tipo"
+                                value="OUTRA_PAGA">
+
+                            Somente a outra irmã paga
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <div class="campo">
+
+                    <label>
+
+                        Observação
+
+                    </label>
+
+                    <textarea
+                        id="observacao"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="Informações adicionais (opcional)"></textarea>
+
+                </div>
+
+                <button
+                    id="btnSalvar"
+                    type="submit">
+
+                    Salvar Despesa
+
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- HISTÓRICO -->
+
+        <section class="card">
+
+            <div class="titulo-card">
+
+                <h2>
+
+                    Histórico
+
+                </h2>
+
+                <button
+                    id="btnAtualizarHistorico"
+                    class="btn-secundario">
+
+                    Atualizar
+
+                </button>
+
+            </div>
+
+            <div id="listaHistorico">
+
+                Nenhuma despesa cadastrada.
+
+            </div>
+
+        </section>
+
+        <!-- FECHAMENTO -->
+
+        <section class="card">
+
+            <h2>
+
+                Fechamento do mês
+
+            </h2>
+
+            <button
+                id="btnFecharMes"
+                class="btn-perigo">
+
+                Fechar Mês
+
+            </button>
+
+        </section>
+
+    </section>
 
 </div>
 
-<script src="app.js"></script>
+<!-- MODAL SENHA -->
 
-    <script>
+<div
+    id="modalSenha"
+    class="modal">
 
-if("serviceWorker" in navigator){
+    <div class="modal-conteudo">
 
-    navigator.serviceWorker.register("sw.js");
+        <h3>
 
-}
+            Fechar mês
 
-</script>
-    
+        </h3>
+
+        <p>
+
+            Digite a senha para continuar.
+
+        </p>
+
+        <input
+            type="password"
+            id="senhaFechamento"
+            maxlength="4"
+            placeholder="Senha">
+
+        <div class="acoes">
+
+            <button id="cancelarModal">
+
+                Cancelar
+
+            </button>
+
+            <button id="confirmarFechamento">
+
+                Confirmar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- LOADING -->
+
+<div
+    id="loading"
+    class="loading">
+
+    Carregando...
+
+</div>
+
+<!-- TOAST -->
+
+<div
+    id="toast">
+
+</div>
+
+<script type="module" src="firebase.js"></script>
+
+<script type="module" src="app.js"></script>
+
+<script type="module" src="dashboard.js"></script>
+
+<script type="module" src="historico.js"></script>
+
+<script type="module" src="fechamento.js"></script>
+
+<script type="module" src="exportar.js"></script>
+
 </body>
 
 </html>
