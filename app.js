@@ -1,5 +1,5 @@
 const URL_API = 
-"https://script.google.com/macros/s/COLE_SUA_URL_AQUI/exec";
+"https://script.google.com/macros/s/AKfycbypx6CBRx1Lm2r4AvWQpbM-lh9MprFbRLcjo32PIt3pMlLTqCHcs6c3qeW6NBJpMm7H/exec";
 
 
 
