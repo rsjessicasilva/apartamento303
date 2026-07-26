@@ -122,105 +122,39 @@
 
                     <!-- Data -->
 
-                    <div class="campo">
+<div class="campo">
+    <label for="data">Data *</label>
+    <input id="data" name="data" type="date" required>
+</div>
 
-                        <label>
-
-                            Data *
-
-                        </label>
-
-                        <input
-
-                            type="date"
-
-                            id="data"
-
-                            required>
-
-                    </div>
 
                     <!-- Categoria -->
 
-                    <div class="campo">
+<div class="campo">
+    <label for="categoria">Categoria *</label>
+    <select id="categoria" name="categoria" required>
+        <option value="">Selecione</option>
+    </select>
+</div>
 
-                        <label>
-
-                            Categoria *
-
-                        </label>
-
-                        <select
-
-                            id="categoria"
-
-                            required>
-
-                            <option value="">
-
-                                Selecione
-
-                            </option>
-
-                        </select>
-
-                    </div>
 
                     <!-- Valor -->
 
-                    <div class="campo">
-
-                        <label>
-
-                            Valor *
-
-                        </label>
-
-                        <input
-
-                            type="text"
-
-                            id="valor"
-
-                            placeholder="0,00"
-
-                            autocomplete="off"
-
-                            required>
-
-                    </div>
+ <div class="campo">
+    <label for="valor">Valor *</label>
+    <input id="valor" name="valor" type="text" placeholder="0,00" autocomplete="off" required>
+</div>
 
                     <!-- Quem pagou -->
 
-                    <div class="campo">
+ <div class="campo">
+    <label for="pagante">Quem pagou? *</label>
+    <select id="pagante" name="pagante" required>
+        <option value="Jessica">Jessica</option>
+        <option value="Juliana">Juliana</option>
+    </select>
+</div>
 
-                        <label>
-
-                            Quem pagou? *
-
-                        </label>
-
-                        <select
-
-                            id="pagante"
-
-                            required>
-
-                            <option>
-
-                                Jessica
-
-                            </option>
-
-                            <option>
-
-                                Juliana
-
-                            </option>
-
-                        </select>
-
-                    </div>
 
                     <!-- Tipo -->
                     <!-- Tipo da despesa -->
@@ -272,50 +206,24 @@
 
                     <!-- Observação -->
 
-                    <div class="campo">
+<div class="campo">
+    <label for="observacao">Observação</label>
+    <textarea id="observacao" name="observacao" rows="4" maxlength="300" placeholder="Informações adicionais (opcional)"></textarea>
+</div>
 
-                        <label>
-
-                            Observação
-
-                        </label>
-
-                        <textarea
-
-                            id="observacao"
-
-                            rows="4"
-
-                            maxlength="300"
-
-                            placeholder="Informações adicionais (opcional)">
-
-                        </textarea>
-
-                    </div>
 
                     <!-- Comprovante -->
 
-                    <div class="campo">
+<div class="campo">
+    <label for="comprovante">Comprovante (Opcional)</label>
+    <input id="comprovante" name="comprovante" type="file" accept=".jpg,.jpeg,.png,.pdf">
+</div>
 
-                        <label>
-
-                            Comprovante (Opcional)
-
-                        </label>
-
-                        <input
-
-                            type="file"
-
-                            id="comprovante"
-
-                            accept=".jpg,.jpeg,.png,.pdf">
-
-                    </div>
 
                     <!-- Botão -->
-
+                    <div id="mensagem"
+                         class="mensagem sucesso hidden">
+                    </div>
                     <button
 
                         id="btnSalvar"
@@ -412,6 +320,22 @@
 
             </div>
 
+            <div class="dashboardCard">
+
+                 <span>
+
+                    Quantidade de despesas
+
+                </span>
+
+                <h2 id="quantidadeDespesas">
+
+                    0
+
+                </h2>
+
+            </div>
+            
         </div>
 
         <!-- Histórico -->
@@ -429,10 +353,8 @@
             </div>
 
             <div
-
-                id="listaDespesas"
-
-                class="listaDespesas">
+                 id="listaUltimasDespesas"
+                 class="listaDespesas">
 
             </div>
 
@@ -521,15 +443,9 @@
 
             </p>
 
-            <input
+<label for="senhaFechamento" class="hidden">Senha de fechamento</label>
+<input id="senhaFechamento" name="senhaFechamento" type="password" maxlength="10" placeholder="Senha">
 
-                type="password"
-
-                id="senhaFechamento"
-
-                maxlength="10"
-
-                placeholder="Senha">
 
             <div class="modalButtons">
 
@@ -601,19 +517,19 @@
 
     <!-- Service Worker -->
 
-    <script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("./sw.js");
+      console.log("Service Worker registrado em:", reg.scope);
+    } catch (err) {
+      console.warn("Falha ao registrar Service Worker:", err);
+    }
+  });
+}
+</script>
 
-        if ("serviceWorker" in navigator) {
-
-            window.addEventListener("load", () => {
-
-                navigator.serviceWorker.register("./sw.js");
-
-            });
-
-        }
-
-    </script>
 
 </body>
 

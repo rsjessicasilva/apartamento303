@@ -25,17 +25,70 @@ import {
     salvarDespesa
 } from "./js/services/despesas.js";
 
+import {
+    inicializarDashboard,
+    atualizarDashboard
+} from "./js/dashboard.js";
+
+import {
+    inicializarCategorias
+} from "./js/services/categorias.js";
+
+import {
+    carregarCategoriasFormulario
+} from "./js/categorias-ui.js";
+
 /* ==========================================================
    ELEMENTOS DA TELA
 ========================================================== */
 
-const form = document.getElementById("formDespesa");
+const elementos = {
 
-const btnSalvar = document.getElementById("btnSalvar");
+    form: $("formDespesa"),
 
-const mensagem = document.getElementById("mensagem");
+    btnSalvar: $("btnSalvar"),
 
-const loading = document.getElementById("loading");
+    mensagem: $("mensagem"),
+
+    loading: $("loading"),
+
+    data: $("data"),
+
+    descricao: $("descricao"),
+
+    categoria: $("categoria"),
+
+    valor: $("valor"),
+
+    pagante: $("pagante")
+
+};
+
+const {
+    form,
+    btnSalvar,
+    mensagem,
+    loading
+} = elementos;
+
+/**
+ * Retorna um elemento do DOM.
+ */
+function $(id) {
+
+    return document.getElementById(id);
+
+}
+
+/**
+ * Verifica se um elemento existe.
+ */
+function existeElemento(elemento) {
+
+    return elemento !== null &&
+           elemento !== undefined;
+
+}
 
 /* ==========================================================
    INICIALIZAÇÃO
@@ -45,32 +98,59 @@ window.addEventListener("load", iniciarAplicacao);
 
 async function iniciarAplicacao() {
 
-    document.title =
-        APP_CONFIG.APP_NAME;
+    document.title = APP_CONFIG.APP_NAME;
 
-    document.getElementById("data").value =
-        hojeISO();
+    const campoData = $("data");
 
-    observarAutenticacao((usuario) => {
+    if (existeElemento(campoData)) {
+
+        campoData.value = hojeISO();
+
+    }
+
+    observarAutenticacao(async (usuario) => {
 
         if (!usuario) {
 
-            btnSalvar.disabled = true;
+            if (existeElemento(btnSalvar)) {
 
-            mensagem.className = "mensagem erro";
+                btnSalvar.disabled = true;
 
-            mensagem.style.display = "block";
+            }
 
-            mensagem.innerHTML =
-                "Faça login para utilizar o sistema.";
+            if (existeElemento(mensagem)) {
+
+                mensagem.className = "mensagem erro";
+                mensagem.style.display = "block";
+                mensagem.innerHTML =
+                    "Faça login para utilizar o sistema.";
+
+            }
 
             return;
 
         }
 
-        btnSalvar.disabled = false;
+        if (existeElemento(btnSalvar)) {
 
-        mensagem.style.display = "none";
+            btnSalvar.disabled = false;
+
+        }
+
+       if (existeElemento(mensagem)) {
+
+            ocultarMensagem();
+
+}
+
+        /* Inicializa as categorias padrão (somente na primeira execução) */
+        await inicializarCategorias();
+
+        /* Carrega as categorias no <select> do formulário */
+        await carregarCategoriasFormulario();
+
+        /* Inicializa o dashboard */
+        await inicializarDashboard();
 
     });
 
@@ -82,19 +162,70 @@ async function iniciarAplicacao() {
 
 function mostrarLoading() {
 
-    loading.classList.remove("oculto");
+    if (existeElemento(loading)) {
 
-    btnSalvar.disabled = true;
+        loading.classList.remove("hidden");
+        loading.classList.remove("oculto");
+
+    }
+
+    if (existeElemento(btnSalvar)) {
+
+        btnSalvar.disabled = true;
+
+    }
 
 }
 
 function esconderLoading() {
 
-    loading.classList.add("oculto");
+    if (existeElemento(loading)) {
 
-    btnSalvar.disabled = false;
+        loading.classList.add("hidden");
+
+    }
+
+    if (existeElemento(btnSalvar)) {
+
+        btnSalvar.disabled = false;
+
+    }
 
 }
+
+/* ==========================================================
+   MENSAGENS
+========================================================== */
+
+function mostrarErro(texto) {
+    if (!existeElemento(mensagem)) {
+        return;
+    }
+    mensagem.classList.remove("sucesso", "erro", "hidden");
+    mensagem.classList.add("erro");
+    mensagem.textContent = texto;
+    mensagem.classList.remove("hidden");
+}
+
+function mostrarSucesso(texto) {
+    if (!existeElemento(mensagem)) {
+        return;
+    }
+    mensagem.classList.remove("sucesso", "erro", "hidden");
+    mensagem.classList.add("sucesso");
+    mensagem.textContent = texto;
+    mensagem.classList.remove("hidden");
+}
+
+function ocultarMensagem() {
+    if (!existeElemento(mensagem)) {
+        return;
+    }
+    mensagem.classList.add("hidden");
+    mensagem.textContent = "";
+    mensagem.classList.remove("sucesso", "erro");
+}
+
 
 /* ==========================================================
    LIMPAR FORMULÁRIO
@@ -104,8 +235,63 @@ function limparFormulario() {
 
     form.reset();
 
-    document.getElementById("data").value =
-        hojeISO();
+    if (elementos.data) {
+
+        elementos.data.value = hojeISO();
+
+    }
+
+}
+/* ==========================================================
+   DESPESA
+========================================================== */
+
+function criarObjetoDespesa(usuario) {
+
+    return {
+
+        data: elementos.data?.value || "",
+
+        descricao: limparTexto(
+            elementos.descricao?.value || ""
+        ),
+
+        categoria: elementos.categoria?.value || "",
+
+        valor: converterValor(
+            elementos.valor?.value || ""
+        ),
+
+        pagante: elementos.pagante?.value || "",
+
+        usuarioId: usuario.uid,
+
+        usuarioNome: usuario.nome,
+
+        criadoPor: usuario.email
+
+    };
+
+}
+
+function validarDespesa(despesa) {
+
+    if (!despesa.data)
+        return "Informe a data.";
+
+    if (!despesa.descricao)
+        return "Informe a descrição.";
+
+    if (!despesa.categoria)
+        return "Selecione a categoria.";
+
+    if (despesa.valor <= 0)
+        return "Informe um valor válido.";
+
+    if (!despesa.pagante)
+        return "Selecione quem pagou.";
+
+    return null;
 
 }
 
@@ -113,151 +299,94 @@ function limparFormulario() {
    SALVAR DESPESA
 ========================================================== */
 
-form.addEventListener("submit", async (e) => {
+if (existeElemento(form)) {
 
-    e.preventDefault();
+    form.addEventListener("submit", async (e) => {
 
-    mensagem.style.display = "none";
+        e.preventDefault();
 
-    const usuario = getUsuarioAtual();
+        if (existeElemento(mensagem)) {
 
-    if (!usuario) {
+            ocultarMensagem();
 
-        mensagem.className = "mensagem erro";
+        }
 
-        mensagem.style.display = "block";
+        const usuario = getUsuarioAtual();
 
-        mensagem.innerHTML =
-            "Faça login para continuar.";
+        if (!usuario) {
 
-        return;
+            if (existeElemento(mensagem)) {
 
-    }
+                mensagem.className = "mensagem erro";
+                mensagem.style.display = "block";
+                mensagem.innerHTML =
+                    "Faça login para continuar.";
 
-    const despesa = {
+            }
 
-        data:
-            document.getElementById("data").value,
+            return;
 
-        descricao:
-            limparTexto(
-                document.getElementById("descricao").value
-            ),
+        }
 
-        categoria:
-            document.getElementById("categoria").value,
+        const despesa = criarObjetoDespesa(usuario);
 
-        valor:
-            converterValor(
-                document.getElementById("valor").value
-            ),
+        /* ==========================
+           VALIDAÇÕES
+        ========================== */
 
-        pagante:
-            document.getElementById("pagante").value,
+const erroValidacao = validarDespesa(despesa);
 
-        usuarioId:
-            usuario.uid,
+if (erroValidacao) {
 
-        usuarioNome:
-            usuario.nome,
+    mostrarErro(erroValidacao);
 
-        criadoPor:
-            usuario.email
+    return;
 
-    };
+}
+ 
+        mostrarLoading();
 
-    /* ==========================
-       VALIDAÇÕES
-    ========================== */
+        try {
 
-    if (!despesa.data) {
+            await salvarDespesa(despesa);
 
-        mensagem.className = "mensagem erro";
-        mensagem.style.display = "block";
-        mensagem.innerHTML = "Informe a data.";
+            limparFormulario();
 
-        return;
+            const hoje = new Date();
 
-    }
+            await atualizarDashboard(
 
-    if (!despesa.descricao) {
+                hoje.getMonth() + 1,
 
-        mensagem.className = "mensagem erro";
-        mensagem.style.display = "block";
-        mensagem.innerHTML = "Informe a descrição.";
+                hoje.getFullYear()
 
-        return;
+            );
 
-    }
 
-    if (!despesa.categoria) {
+            mostrarMensagem(
+                "Despesa salva com sucesso."
+            );
 
-        mensagem.className = "mensagem erro";
-        mensagem.style.display = "block";
-        mensagem.innerHTML = "Selecione a categoria.";
+        } catch (erro) {
 
-        return;
+            console.error(erro);
 
-    }
+            if (existeElemento(mensagem)) {
 
-    if (despesa.valor <= 0) {
+                mostrarErro("Erro ao salvar despesa.");
 
-        mensagem.className = "mensagem erro";
-        mensagem.style.display = "block";
-        mensagem.innerHTML = "Informe um valor válido.";
+            }
 
-        return;
+        } finally {
 
-    }
+            esconderLoading();
 
-    if (!despesa.pagante) {
+        }
 
-        mensagem.className = "mensagem erro";
-        mensagem.style.display = "block";
-        mensagem.innerHTML = "Selecione quem pagou.";
+    });
 
-        return;
+}
 
-    }
-
-    mostrarLoading();
-
-    try {
-
-        await salvarDespesa(despesa);
-
-               mensagem.className = "mensagem sucesso";
-
-        mensagem.style.display = "block";
-
-        mensagem.innerHTML =
-            "✅ Despesa salva com sucesso!";
-
-        limparFormulario();
-
-        mostrarMensagem(
-            "Despesa salva com sucesso."
-        );
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        mensagem.className = "mensagem erro";
-
-        mensagem.style.display = "block";
-
-        mensagem.innerHTML =
-            erro.message ||
-            "Erro ao salvar a despesa.";
-
-    } finally {
-
-        esconderLoading();
-
-    }
-
-});
 
 /* ==========================================================
    EXPORTAÇÃO

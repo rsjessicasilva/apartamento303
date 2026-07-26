@@ -32,7 +32,7 @@ const firebaseConfig = {
 
     projectId: "apartamento303-3f259",
 
-    storageBucket: "apartamento303-3f259.firebasestorage.app",
+    storageBucket: "apartamento303-3f259.appspot.com",
 
     messagingSenderId: "836613207893",
 
