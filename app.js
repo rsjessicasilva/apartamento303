@@ -1,7 +1,13 @@
+const URL_API = 
+"https://script.google.com/macros/s/COLE_SUA_URL_AQUI/exec";
+
+
+
 const botao = document.getElementById("btnSalvar");
 
 
-botao.addEventListener("click", function(){
+
+botao.addEventListener("click", async function(){
 
 
     const despesa = {
@@ -26,15 +32,44 @@ botao.addEventListener("click", function(){
         pagante:
         document.getElementById("pagante").value
 
-
     };
 
 
-    console.log(despesa);
+
+    try {
 
 
-    document.getElementById("mensagem").innerHTML =
-    "Despesa cadastrada!";
+        await fetch(URL_API, {
+
+
+            method:"POST",
+
+
+            body: JSON.stringify(despesa)
+
+
+        });
+
+
+
+        document.getElementById("mensagem").innerHTML =
+        "Despesa salva com sucesso!";
+
+
+
+    }
+
+    catch(error){
+
+
+        console.log(error);
+
+
+        document.getElementById("mensagem").innerHTML =
+        "Erro ao salvar";
+
+
+    }
 
 
 });
