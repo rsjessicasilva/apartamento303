@@ -58,15 +58,20 @@ self.addEventListener("activate", e=>{
 
 });
 
-self.addEventListener("fetch", e=>{
+self.addEventListener("fetch", event => {
 
-    e.respondWith(
+    const url = new URL(event.request.url);
 
-        caches.match(e.request)
+    // Não intercepta chamadas para APIs externas
+    if (url.origin !== self.location.origin) {
+        return;
+    }
 
-        .then(response=>{
+    event.respondWith(
 
-            return response || fetch(e.request);
+        caches.match(event.request).then(response => {
+
+            return response || fetch(event.request);
 
         })
 
