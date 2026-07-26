@@ -1,35 +1,74 @@
-const CACHE_NAME = "controle-apartamento-v1";
+const CACHE = "apto303-v2";
 
-const FILES = [
+const arquivos = [
+
     "./",
+
     "./index.html",
+
     "./style.css",
-    "./app.js"
+
+    "./app.js",
+
+    "./manifest.json",
+
+    "./icons/icon-192.png",
+
+    "./icons/icon-512.png"
+
 ];
 
-self.addEventListener("install", event => {
+self.addEventListener("install", e=>{
 
-    event.waitUntil(
+    e.waitUntil(
 
-        caches.open(CACHE_NAME)
+        caches.open(CACHE)
 
-            .then(cache => cache.addAll(FILES))
+        .then(cache=>cache.addAll(arquivos))
 
     );
 
 });
 
-self.addEventListener("fetch", event => {
+self.addEventListener("activate", e=>{
 
-    event.respondWith(
+    e.waitUntil(
 
-        caches.match(event.request)
+        caches.keys()
 
-            .then(response => {
+        .then(keys=>{
 
-                return response || fetch(event.request);
+            return Promise.all(
 
-            })
+                keys.map(key=>{
+
+                    if(key!==CACHE){
+
+                        return caches.delete(key);
+
+                    }
+
+                })
+
+            );
+
+        })
+
+    );
+
+});
+
+self.addEventListener("fetch", e=>{
+
+    e.respondWith(
+
+        caches.match(e.request)
+
+        .then(response=>{
+
+            return response || fetch(e.request);
+
+        })
 
     );
 
