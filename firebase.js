@@ -1,162 +1,76 @@
-/*************************************************
- * CONTROLE APARTAMENTO 303
- * firebase.js
- * Versão 3.0
- *************************************************/
+/**
+ * ==========================================================
+ * Apartamento 303
+ * Controle Financeiro
+ * Versão: 3.0.0
+ * Arquivo: firebase.js
+ * ==========================================================
+ */
 
-/* ===== IMPORTS FIREBASE ===== */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
-import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged,
-    setPersistence,
-    browserLocalPersistence
-
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 
 import {
+    getAuth
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
+import {
     getFirestore
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+    getStorage
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
 
-
-/*================================================
- CONFIGURAÇÃO FIREBASE
-================================================*/
-
-/*
-Substituir pelos dados do projeto Firebase
-*/
-
+/**
+ * Configuração do Firebase
+ */
 const firebaseConfig = {
 
-    apiKey: "SUA_API_KEY",
+    apiKey: "AIzaSyCYvj2ZwKepVG0-mWLWpSb9v_Y5LQyJs4o",
 
-    authDomain: "SEU_PROJETO.firebaseapp.com",
+    authDomain: "apartamento303-3f259.firebaseapp.com",
 
-    projectId: "SEU_PROJETO",
+    projectId: "apartamento303-3f259",
 
-    storageBucket: "SEU_PROJETO.appspot.com",
+    storageBucket: "apartamento303-3f259.firebasestorage.app",
 
-    messagingSenderId: "000000000000",
+    messagingSenderId: "836613207893",
 
-    appId: "1:000000000000:web:000000000000"
+    appId: "1:836613207893:web:e3534d320430ca8fec61dc"
 
 };
 
-
-/*================================================
- INICIALIZAÇÃO
-================================================*/
-
+/**
+ * Inicializa Firebase
+ */
 const app = initializeApp(firebaseConfig);
 
+/**
+ * Authentication
+ */
 const auth = getAuth(app);
 
+/**
+ * Cloud Firestore
+ */
 const db = getFirestore(app);
 
-const provider = new GoogleAuthProvider();
+/**
+ * Firebase Storage
+ */
+const storage = getStorage(app);
 
+/**
+ * Exportações
+ */
+export {
 
-/*================================================
- MANTER LOGIN
-================================================*/
-
-await setPersistence(
+    app,
 
     auth,
 
-    browserLocalPersistence
-
-);
-
-
-/*================================================
- LOGIN
-================================================*/
-
-export async function loginGoogle(){
-
-    try{
-
-        const resultado =
-
-        await signInWithPopup(
-
-            auth,
-
-            provider
-
-        );
-
-        return resultado.user;
-
-    }
-
-    catch(erro){
-
-        console.error(erro);
-
-        throw erro;
-
-    }
-
-}
-
-
-/*================================================
- LOGOUT
-================================================*/
-
-export async function logout(){
-
-    await signOut(auth);
-
-}
-
-
-/*================================================
- USUÁRIO ATUAL
-================================================*/
-
-export function usuarioAtual(){
-
-    return auth.currentUser;
-
-}
-
-
-/*================================================
- OBSERVADOR
-================================================*/
-
-export function observarLogin(callback){
-
-    onAuthStateChanged(
-
-        auth,
-
-        callback
-
-    );
-
-}
-
-
-/*================================================
- EXPORTS
-================================================*/
-
-export {
-
     db,
 
-    auth
+    storage
 
 };
