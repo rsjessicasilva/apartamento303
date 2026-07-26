@@ -474,5 +474,148 @@
 
         </section>
 
-        
+        <!-- Configurações -->
+
+        <section class="card">
+
+            <h3>Configurações</h3>
+
+            <button
+                id="btnFecharMes"
+                class="dangerButton">
+
+                Fechar Mês
+
+            </button>
+
+            <button
+                id="btnLogout"
+                class="secondaryButton">
+
+                Sair
+
+            </button>
+
+        </section>
+
+    </section>
+
+    <!-- Modal Fechamento -->
+
+    <div
+        id="modalFechamento"
+        class="modal hidden">
+
+        <div class="modalContent">
+
+            <h2>
+
+                Fechar mês
+
+            </h2>
+
+            <p>
+
+                Para confirmar o fechamento do mês,
+                informe a senha.
+
+            </p>
+
+            <input
+
+                type="password"
+
+                id="senhaFechamento"
+
+                maxlength="10"
+
+                placeholder="Senha">
+
+            <div class="modalButtons">
+
+                <button
+                    id="btnCancelarFechamento"
+                    class="secondaryButton">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    id="btnConfirmarFechamento"
+                    class="dangerButton">
+
+                    Confirmar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Loading -->
+
+    <div
+        id="loading"
+        class="loading hidden">
+
+        <div class="spinner"></div>
+
+        <span>
+
+            Aguarde...
+
+        </span>
+
+    </div>
+
+    <!-- Toast -->
+
+    <div
+        id="toast"
+        class="toast hidden">
+
+    </div>
+
+    <!-- Firebase -->
+
+    <script type="module" src="firebase.js"></script>
+
+    <!-- Configuração -->
+
+    <script type="module" src="js/config.js"></script>
+
+    <!-- Login -->
+
+    <script type="module" src="js/auth.js"></script>
+
+    <!-- Utilitários -->
+
+    <script type="module" src="js/utils.js"></script>
+
+    <!-- Aplicação -->
+
+    <script type="module" src="app.js"></script>
+
+    <!-- Service Worker -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener("load", () => {
+
+                navigator.serviceWorker.register("./sw.js");
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>    
                     
