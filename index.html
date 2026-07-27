@@ -20,10 +20,10 @@
           href="manifest.json">
 
     <link rel="icon"
-          href="icons/icon-192.png">
+          href="icons/icon-512.png">
 
     <link rel="apple-touch-icon"
-          href="icons/icon-192.png">
+          href="icons/icon-512.png">
 
     <link rel="stylesheet"
           href="style.css">
@@ -36,7 +36,7 @@
 
     <div id="splashScreen">
 
-        <img src="icons/icon-192.png"
+        <img src="icons/icon-512.png"
              alt="Apartamento 303">
 
         <h1>Apartamento 303</h1>
@@ -52,7 +52,7 @@
 
         <div class="card">
 
-            <img src="icons/icon-192.png"
+            <img src="icons/icon-512.png"
                  class="logo">
 
             <h2>Bem-vinda</h2>
@@ -264,7 +264,7 @@
 
             <h2>
 
-                Dashboard
+               Dashboard
 
             </h2>
 
@@ -272,71 +272,102 @@
 
         <div class="cardsDashboard">
 
+            <!-- Total do mês -->
             <div class="dashboardCard">
 
                 <span>
-
                     Total do mês
-
                 </span>
 
                 <h2 id="totalMes">
-
                     R$ 0,00
-
                 </h2>
 
             </div>
 
+            <!-- Jessica deve -->
             <div class="dashboardCard">
 
                 <span>
-
-                    Jessica pagou
-
+                    Jessica deve
                 </span>
 
-                <h2 id="totalJessica">
-
+                <h2 id="valorJessicaDeve">
                     R$ 0,00
-
                 </h2>
 
             </div>
 
+            <!-- Juliana deve -->
             <div class="dashboardCard">
 
                 <span>
-
-                    Juliana pagou
-
+                    Juliana deve
                 </span>
 
-                <h2 id="totalJuliana">
-
+                <h2 id="valorJulianaDeve">
                     R$ 0,00
-
                 </h2>
 
             </div>
 
+            <!-- Quantidade -->
             <div class="dashboardCard">
 
-                 <span>
-
+                <span>
                     Quantidade de despesas
-
                 </span>
 
                 <h2 id="quantidadeDespesas">
-
                     0
-
                 </h2>
 
             </div>
-            
+
+            <!-- Quanto cada uma pagou -->
+            <div class="dashboardCard">
+
+                <span>
+                    Valor pago no mês
+                </span>
+
+                <div class="acertoResumo">
+
+                    <p>
+                        Jessica:
+                        <strong id="totalJessica">
+                            R$ 0,00
+                        </strong>
+                    </p>
+
+                    <p>
+                        Juliana:
+                        <strong id="totalJuliana">
+                            R$ 0,00
+                        </strong>
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Resultado do acerto -->
+            <div class="dashboardCard destaque">
+
+                <span>
+                    Acerto do mês
+                </span>
+
+                <h3 id="resultadoAcerto">
+                    Contas equilibradas
+                </h3>
+
+            </div>
+
         </div>
+                
+
+
 
         <!-- Histórico -->
 
@@ -364,63 +395,57 @@
 
         <section class="card">
 
-            <button
+ 
 
-                id="btnExportarPdf"
+ <!-- Ações -->
 
-                class="secondaryButton">
+<section class="card">
 
-                Exportar PDF
+    <div class="acoesExportacao">
 
-            </button>
+        <button
+            id="btnExportarPDF"
+            class="primaryButton btnExportacao">
 
-            <button
+            📄 Exportar PDF
 
-                id="btnExportarExcel"
+        </button>
 
-                class="secondaryButton">
+        <button
+            id="btnExportarExcel"
+            class="primaryButton btnExportacao">
 
-                Exportar Excel
+            📊 Exportar Excel
 
-            </button>
+        </button>
 
-            <button
+        <button
+            id="btnExportarCsv"
+            class="primaryButton btnExportacao">
 
-                id="btnExportarCsv"
+            📋 Exportar CSV
 
-                class="secondaryButton">
+        </button>
 
-                Exportar CSV
+    </div>
 
-            </button>
+</section>
+            
 
-        </section>
 
         <!-- Configurações -->
 
-        <section class="card">
+<section class="card">
 
-            <h3>Configurações</h3>
+    <button
+        id="btnFecharMes"
+        class="dangerButton">
 
-            <button
-                id="btnFecharMes"
-                class="dangerButton">
+        Fechar Mês
 
-                Fechar Mês
+    </button>
 
-            </button>
-
-            <button
-                id="btnLogout"
-                class="secondaryButton">
-
-                Sair
-
-            </button>
-
-        </section>
-
-    </section>
+</section>
 
     <!-- Modal Fechamento -->
 
@@ -530,6 +555,11 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </body>
 

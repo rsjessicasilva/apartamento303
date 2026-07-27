@@ -2,7 +2,7 @@
  * ==========================================================
  * Apartamento 303
  * Controle Financeiro
- * Versão: 3.0.0
+ * Versão 3.0
  * Arquivo: app.js
  * ==========================================================
  */
@@ -18,7 +18,8 @@ import {
 
 import {
     observarAutenticacao,
-    getUsuarioAtual
+    getUsuarioAtual,
+    fazerLogin
 } from "./js/auth.js";
 
 import {
@@ -38,10 +39,26 @@ import {
     carregarCategoriasFormulario
 } from "./js/categorias-ui.js";
 
+console.log("APP.JS CARREGOU");
+
 /* ==========================================================
-   ELEMENTOS DA TELA
+   ELEMENTOS
 ========================================================== */
 
+function $(id) {
+    return document.getElementById(id);
+}
+
+function existeElemento(el) {
+    return el !== null && el !== undefined;
+}
+
+const splash = $("splashScreen");
+const login = $("loginScreen");
+const appScreen = $("appScreen");
+const dashboardScreen = $("dashboardScreen");
+const btnDashboard = $("btnDashboard");
+const btnVoltarCadastro = $("btnVoltarCadastro");
 const elementos = {
 
     form: $("formDespesa"),
@@ -60,35 +77,91 @@ const elementos = {
 
     valor: $("valor"),
 
-    pagante: $("pagante")
+    pagante: $("pagante"),
+
+    btnLogin: $("btnLogin")
 
 };
 
 const {
+
     form,
+
     btnSalvar,
+
     mensagem,
-    loading
+
+    loading,
+
+    btnLogin
+
 } = elementos;
 
-/**
- * Retorna um elemento do DOM.
- */
-function $(id) {
+/* ==========================================================
+   CONTROLE DAS TELAS
+========================================================== */
 
-    return document.getElementById(id);
+function mostrarSplash() {
+
+    if (splash)
+        splash.style.display = "flex";
+
+    if (login)
+        login.classList.add("hidden");
+
+    if (appScreen)
+        appScreen.classList.add("hidden");
+
+}
+
+function mostrarTelaLogin() {
+
+    if (splash)
+        splash.style.display = "none";
+
+    if (login)
+        login.classList.remove("hidden");
+
+    if (appScreen)
+        appScreen.classList.add("hidden");
 
 }
 
-/**
- * Verifica se um elemento existe.
- */
-function existeElemento(elemento) {
+function mostrarAplicacao() {
 
-    return elemento !== null &&
-           elemento !== undefined;
+    if (splash)
+        splash.style.display = "none";
+
+    if (login)
+        login.classList.add("hidden");
+
+    if (dashboardScreen)
+        dashboardScreen.classList.add("hidden");
+
+    if (appScreen)
+        appScreen.classList.remove("hidden");
 
 }
+function mostrarDashboard() {
+
+    if (appScreen)
+        appScreen.classList.add("hidden");
+
+    if (dashboardScreen)
+        dashboardScreen.classList.remove("hidden");
+
+}
+
+function voltarCadastro() {
+
+    if (dashboardScreen)
+        dashboardScreen.classList.add("hidden");
+
+    if (appScreen)
+        appScreen.classList.remove("hidden");
+
+}
+
 
 /* ==========================================================
    INICIALIZAÇÃO
@@ -98,59 +171,157 @@ window.addEventListener("load", iniciarAplicacao);
 
 async function iniciarAplicacao() {
 
+    console.log("INICIANDO A APLICAÇÃO");
+
     document.title = APP_CONFIG.APP_NAME;
 
-    const campoData = $("data");
+    mostrarSplash();
 
-    if (existeElemento(campoData)) {
+    if (existeElemento(elementos.data)) {
 
-        campoData.value = hojeISO();
+        elementos.data.value = hojeISO();
 
     }
+
+    /* -------------------------
+       LOGIN GOOGLE
+    ------------------------- */
+
+    if (existeElemento(btnLogin)) {
+
+        btnLogin.addEventListener("click", async () => {
+
+            btnLogin.disabled = true;
+
+            try {
+
+                await fazerLogin();
+
+            } catch (erro) {
+
+                console.error("Erro no login:", erro);
+
+                mostrarErro("Não foi possível fazer login.");
+
+            } finally {
+
+                btnLogin.disabled = false;
+
+            }
+
+        });
+
+    }
+/* -------------------------
+   BOTÃO DASHBOARD
+------------------------- */
+
+if (btnDashboard) {
+
+    btnDashboard.addEventListener("click", async () => {
+
+        const hoje = new Date();
+
+        await atualizarDashboard(
+
+            hoje.getMonth() + 1,
+
+            hoje.getFullYear()
+
+        );
+
+        mostrarDashboard();
+
+    });
+
+}
+
+/* -------------------------
+   VOLTAR
+------------------------- */
+
+if (btnVoltarCadastro) {
+
+    btnVoltarCadastro.addEventListener("click", () => {
+
+        voltarCadastro();
+
+    });
+
+}
+    /* -------------------------
+       AUTENTICAÇÃO
+    ------------------------- */
 
     observarAutenticacao(async (usuario) => {
 
         if (!usuario) {
 
-            if (existeElemento(btnSalvar)) {
-
-                btnSalvar.disabled = true;
-
-            }
-
-            if (existeElemento(mensagem)) {
-
-                mensagem.className = "mensagem erro";
-                mensagem.style.display = "block";
-                mensagem.innerHTML =
-                    "Faça login para utilizar o sistema.";
-
-            }
+            mostrarTelaLogin();
 
             return;
 
         }
 
-        if (existeElemento(btnSalvar)) {
+        console.log("Usuário autenticado:", usuario);
 
-            btnSalvar.disabled = false;
+        try {
+
+            /* FOTO */
+
+            const foto = $("fotoUsuario");
+
+            if (foto && usuario.foto) {
+
+                foto.src = usuario.foto;
+
+            }
+
+            /* NOME */
+
+            const nome = $("nomeUsuario");
+
+            if (nome) {
+
+                nome.textContent = usuario.nome;
+
+            }
+
+            /* EMAIL */
+
+            const email = $("emailUsuario");
+
+            if (email) {
+
+                email.textContent = usuario.email;
+
+            }
+
+            console.log("Inicializando categorias...");
+
+            await inicializarCategorias();
+
+            console.log("Categorias inicializadas.");
+
+            await carregarCategoriasFormulario();
+
+            console.log("Categorias carregadas.");
+
+            console.log("Inicializando dashboard...");
+
+            await inicializarDashboard();
+
+            console.log("Dashboard inicializado.");
+
+            mostrarAplicacao();
+
+        } catch (erro) {
+
+            console.error("Erro na inicialização:", erro);
+
+            mostrarErro("Erro ao carregar a aplicação.");
 
         }
-
-       if (existeElemento(mensagem)) {
-
-            ocultarMensagem();
-
-}
-
-        /* Inicializa as categorias padrão (somente na primeira execução) */
-        await inicializarCategorias();
-
-        /* Carrega as categorias no <select> do formulário */
-        await carregarCategoriasFormulario();
-
-        /* Inicializa o dashboard */
-        await inicializarDashboard();
 
     });
 
@@ -233,28 +404,39 @@ function ocultarMensagem() {
 
 function limparFormulario() {
 
+    if (!form) return;
+
     form.reset();
 
     if (elementos.data) {
-
         elementos.data.value = hojeISO();
-
     }
 
+    const tipoDividida = document.querySelector(
+        'input[name="tipoDespesa"][value="DIVIDIDA"]'
+    );
+
+    if (tipoDividida) {
+        tipoDividida.checked = true;
+    }
+
+    ocultarMensagem();
+
 }
+
 /* ==========================================================
    DESPESA
 ========================================================== */
 
 function criarObjetoDespesa(usuario) {
 
+    const tipoSelecionado = document.querySelector(
+        'input[name="tipoDespesa"]:checked'
+    );
+
     return {
 
         data: elementos.data?.value || "",
-
-        descricao: limparTexto(
-            elementos.descricao?.value || ""
-        ),
 
         categoria: elementos.categoria?.value || "",
 
@@ -263,6 +445,14 @@ function criarObjetoDespesa(usuario) {
         ),
 
         pagante: elementos.pagante?.value || "",
+
+        tipoDespesa: tipoSelecionado
+            ? tipoSelecionado.value
+            : "DIVIDIDA",
+
+        observacao: limparTexto(
+            document.getElementById("observacao")?.value || ""
+        ),
 
         usuarioId: usuario.uid,
 
@@ -276,20 +466,21 @@ function criarObjetoDespesa(usuario) {
 
 function validarDespesa(despesa) {
 
-    if (!despesa.data)
+    if (!despesa.data) {
         return "Informe a data.";
+    }
 
-    if (!despesa.descricao)
-        return "Informe a descrição.";
+    if (!despesa.categoria) {
+        return "Selecione uma categoria.";
+    }
 
-    if (!despesa.categoria)
-        return "Selecione a categoria.";
-
-    if (despesa.valor <= 0)
+    if (despesa.valor <= 0) {
         return "Informe um valor válido.";
+    }
 
-    if (!despesa.pagante)
+    if (!despesa.pagante) {
         return "Selecione quem pagou.";
+    }
 
     return null;
 
@@ -299,30 +490,19 @@ function validarDespesa(despesa) {
    SALVAR DESPESA
 ========================================================== */
 
-if (existeElemento(form)) {
+if (form) {
 
     form.addEventListener("submit", async (e) => {
 
         e.preventDefault();
 
-        if (existeElemento(mensagem)) {
-
-            ocultarMensagem();
-
-        }
+        ocultarMensagem();
 
         const usuario = getUsuarioAtual();
 
         if (!usuario) {
 
-            if (existeElemento(mensagem)) {
-
-                mensagem.className = "mensagem erro";
-                mensagem.style.display = "block";
-                mensagem.innerHTML =
-                    "Faça login para continuar.";
-
-            }
+            mostrarErro("Faça login para continuar.");
 
             return;
 
@@ -330,25 +510,25 @@ if (existeElemento(form)) {
 
         const despesa = criarObjetoDespesa(usuario);
 
-        /* ==========================
-           VALIDAÇÕES
-        ========================== */
+        const erro = validarDespesa(despesa);
 
-const erroValidacao = validarDespesa(despesa);
+        if (erro) {
 
-if (erroValidacao) {
+            mostrarErro(erro);
 
-    mostrarErro(erroValidacao);
+            return;
 
-    return;
+        }
 
-}
- 
         mostrarLoading();
 
         try {
 
+            console.log("Salvando despesa...", despesa);
+
             await salvarDespesa(despesa);
+
+            console.log("Despesa salva com sucesso.");
 
             limparFormulario();
 
@@ -362,20 +542,20 @@ if (erroValidacao) {
 
             );
 
-
-            mostrarMensagem(
-                "Despesa salva com sucesso."
+            mostrarSucesso(
+                "Despesa cadastrada com sucesso."
             );
 
         } catch (erro) {
 
-            console.error(erro);
+            console.error(
+                "Erro ao salvar despesa:",
+                erro
+            );
 
-            if (existeElemento(mensagem)) {
-
-                mostrarErro("Erro ao salvar despesa.");
-
-            }
+            mostrarErro(
+                "Não foi possível salvar a despesa."
+            );
 
         } finally {
 
