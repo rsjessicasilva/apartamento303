@@ -70,15 +70,17 @@ export async function fazerLogout() {
 
 }
 
-//**
+/**
  * Observa autenticação
  */
 export function observarAutenticacao(callback) {
 
+console.log("AUTH 1 - Entrou em observarAutenticacao");
     onAuthStateChanged(auth, async (user) => {
+        console.log("AUTH 2 - onAuthStateChanged disparou", user);
 
         if (!user) {
-
+            console.log("AUTH 3 - Usuário não autenticado");
             usuarioAtual = null;
 
             authInicializada = true;
@@ -88,7 +90,7 @@ export function observarAutenticacao(callback) {
             return;
 
         }
-
+        console.log("AUTH 4 - Usuário autenticado");
         await salvarUsuario(user);
 
         usuarioAtual = await carregarUsuario(user.uid);
