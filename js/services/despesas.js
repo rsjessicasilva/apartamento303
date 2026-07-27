@@ -13,9 +13,7 @@ import {
     COLLECTIONS
 } from "../config.js";
 
-import {
-    gerarNumeroDespesa
-} from "../utils.js";
+ 
 
 import {
     collection,
@@ -28,7 +26,8 @@ import {
     query,
     where,
     orderBy,
-    Timestamp
+    Timestamp,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 /* ==========================================================
@@ -88,31 +87,29 @@ export async function salvarDespesa(despesa) {
 
         const documento = {
 
-            numero: gerarNumeroDespesa(),
 
-            data: Timestamp.fromDate(
-                new Date(despesa.data)
-            ),
+    data: Timestamp.fromDate(
+    new Date(despesa.data)
+),
 
-            descricao: despesa.descricao,
+    categoria: despesa.categoria,
 
-            categoria: despesa.categoria,
+    valor: despesa.valor,
 
-            valor: Number(despesa.valor),
+    pagante: despesa.pagante,
 
-            pagante: despesa.pagante,
+    tipoDespesa: despesa.tipoDespesa,
 
-            usuarioId: despesa.usuarioId,
+    observacao: despesa.observacao ?? "",
 
-            usuarioNome: despesa.usuarioNome,
+    usuarioId: despesa.usuarioId,
 
-            criadoPor: despesa.criadoPor,
+    usuarioNome: despesa.usuarioNome,
 
-            criadoEm: Timestamp.now(),
+    criadoPor: despesa.criadoPor,
 
-            atualizadoEm: Timestamp.now()
-
-        };
+    criadoEm: serverTimestamp()
+}
 
         const ref = await addDoc(
             despesasRef,
@@ -159,8 +156,8 @@ export async function atualizarDespesa(
 
         }
 
-        dados.atualizadoEm =
-            Timestamp.now();
+            dados.atualizadoEm =
+                serverTimestamp();
 
         await updateDoc(
             getDespesaRef(id),
