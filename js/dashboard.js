@@ -9,12 +9,17 @@
 
 import {
     listarDespesasMes,
-    calcularTotalDespesas
+    calcularTotalDespesas,
+    fecharMesDespesas
 } from "./services/despesas.js";
 
 import {
     formatarMoeda, 
 } from "./utils.js";
+
+import {
+    salvarFechamento
+} from "./services/fechamentos.js";
 
 /* ==========================================================
    ELEMENTOS
@@ -36,7 +41,9 @@ const elementos = {
 
     resultadoAcerto: document.getElementById("resultadoAcerto"),
 
-    listaUltimasDespesas: document.getElementById("listaUltimasDespesas")
+    listaUltimasDespesas: document.getElementById("listaUltimasDespesas"),
+
+    btnFecharMes: document.getElementById("btnFecharMes")
 
 };
  
@@ -401,6 +408,178 @@ async function obterDadosExportacao() {
 
 }
 
+
+/* ==========================================================
+   FECHAR MÊS
+========================================================== */
+
+async function fecharMes() {
+
+    const senha = prompt(
+        "Digite a senha para fechar o mês:"
+    );
+
+    if (senha === null) {
+
+        return;
+
+    }
+
+    if (senha !== "303") {
+
+        alert("Senha incorreta.");
+
+        return;
+
+    }
+
+    const confirmar = confirm(
+
+        "Deseja realmente fechar este mês?\n\n" +
+
+        "Esta operação irá:\n" +
+
+        "• Exportar PDF\n" +
+
+        "• Exportar Excel\n" +
+
+        "• Exportar CSV\n" +
+
+        "• Salvar o histórico do mês\n" +
+
+        "• Arquivar todas as despesas"
+
+    );
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+    try {
+
+        const despesas =
+            await obterDadosExportacao();
+
+        if (!despesas.length) {
+
+            alert(
+                "Não existem despesas para fechar."
+            );
+
+            return;
+
+        }
+
+        const hoje = new Date();
+
+        const mesReferencia =
+
+            `${hoje.getFullYear()}-${String(
+                hoje.getMonth() + 1
+            ).padStart(2, "0")}`;
+
+        /* ==================================================
+           EXPORTAÇÕES
+        ================================================== */
+
+        await exportarPDF();
+
+        await exportarExcel();
+
+        await exportarCSV();
+
+        /* ==================================================
+           RESUMO DO MÊS
+        ================================================== */
+
+        const resumo = {
+
+            mesReferencia,
+
+            totalMes:
+                Number(
+                    elementos.totalMes.textContent
+                        .replace("R$", "")
+                        .replace(/\./g, "")
+                        .replace(",", ".")
+                ) || 0,
+
+            quantidadeDespesas:
+                despesas.length,
+
+            totalJessicaPago:
+                elementos.totalJessica.textContent,
+
+            totalJulianaPago:
+                elementos.totalJuliana.textContent,
+
+            jessicaDeve:
+                elementos.valorJessicaDeve.textContent,
+
+            julianaDeve:
+                elementos.valorJulianaDeve.textContent,
+
+            resultado:
+
+                elementos.resultadoAcerto.textContent
+
+        };
+
+        await salvarFechamento(
+
+            resumo
+
+        );
+
+        /* ==================================================
+           FECHAR DESPESAS
+        ================================================== */
+
+        await fecharMesDespesas(
+
+            hoje.getMonth() + 1,
+
+            hoje.getFullYear()
+
+);
+
+        /* ==================================================
+           ATUALIZAR DASHBOARD
+        ================================================== */
+
+        await atualizarDashboard(
+
+            hoje.getMonth() + 1,
+
+            hoje.getFullYear()
+
+        );
+
+        alert(
+
+            "Mês fechado com sucesso!"
+
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(erro);
+
+        alert(
+
+            "Erro ao fechar o mês."
+
+        );
+
+    }
+
+}  
+
+
 /* ==========================================================
    EVENTOS
 ========================================================== */
@@ -441,7 +620,17 @@ if (btnExportarCsv) {
 
 }
 
+if (elementos.btnFecharMes) {
 
+    elementos.btnFecharMes.addEventListener(
+
+        "click",
+
+        fecharMes
+
+    );
+
+}
 
 /* ==========================================================
    EXPORTAR PDF
