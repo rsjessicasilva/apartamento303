@@ -16,18 +16,19 @@ import {
  
 
 import {
+
     collection,
-    doc,
     addDoc,
     updateDoc,
-    deleteDoc,
-    getDoc,
+    doc,
     getDocs,
     query,
     where,
     orderBy,
     Timestamp,
-    serverTimestamp
+    serverTimestamp,
+    writeBatch
+
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 /* ==========================================================
@@ -85,12 +86,14 @@ export async function salvarDespesa(despesa) {
 
     try {
 
-        const documento = {
 
+const dataReferencia = new Date(despesa.data);
+
+const documento = {
 
     data: Timestamp.fromDate(
-    new Date(despesa.data)
-),
+        dataReferencia
+    ),
 
     categoria: despesa.categoria,
 
@@ -108,8 +111,21 @@ export async function salvarDespesa(despesa) {
 
     criadoPor: despesa.criadoPor,
 
-    criadoEm: serverTimestamp()
-}
+    criadoEm: serverTimestamp(),
+
+    /* ==========================================================
+       CONTROLE DE FECHAMENTO
+    ========================================================== */
+
+    status: "ABERTO",
+
+    mesReferencia:
+        `${dataReferencia.getFullYear()}-${String(
+            dataReferencia.getMonth() + 1
+        ).padStart(2, "0")}`
+
+};
+
 
         const ref = await addDoc(
             despesasRef,
@@ -320,23 +336,30 @@ export async function listarDespesasMes(
             despesasRef,
 
             where(
+                "status",
+                "==",
+                "ABERTO"
+        ),
+
+            where(
                 "data",
                 ">=",
                 Timestamp.fromDate(inicio)
-            ),
+        ),
 
             where(
                 "data",
                 "<",
                 Timestamp.fromDate(fim)
-            ),
+        ),
 
             orderBy(
                 "data",
                 "desc"
-            )
+        )
 
-        );
+); 
+        
 
         const resultado =
             await getDocs(
@@ -359,6 +382,7 @@ export async function listarDespesasMes(
     }
 
 }
+
 /* ==========================================================
    CONSULTAS
 ========================================================== */
@@ -484,5 +508,108 @@ export function calcularTotalDespesas(
 export function contarDespesas(despesas = []) {
 
     return despesas.length;
+
+}
+/* ==========================================================
+   FECHAR MÊS
+========================================================== */
+
+export async function fecharMesDespesas(
+    mes,
+    ano
+) {
+
+    try {
+
+        const inicio = new Date(
+
+            ano,
+
+            mes - 1,
+
+            1
+
+        );
+
+        const fim = new Date(
+
+            ano,
+
+            mes,
+
+            1
+
+        );
+
+        const consulta = query(
+
+            despesasRef,
+
+            where(
+
+                "data",
+
+                ">=",
+
+                Timestamp.fromDate(inicio)
+
+            ),
+
+            where(
+
+                "data",
+
+                "<",
+
+                Timestamp.fromDate(fim)
+
+            )
+
+        );
+
+        const resultado =
+            await getDocs(
+                consulta
+            );
+
+        const batch =
+            writeBatch(db);
+
+        resultado.forEach((item) => {
+
+            batch.update(
+
+                item.ref,
+
+                {
+
+                    status: "FECHADO",
+
+                    fechadoEm:
+                        serverTimestamp()
+
+                }
+
+            );
+
+        });
+
+        await batch.commit();
+
+    }
+
+    catch (erro) {
+
+        console.error(
+
+            "Erro ao fechar mês:",
+
+            erro
+
+        );
+
+        throw erro;
+
+    }
 
 }
